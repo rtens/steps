@@ -9,7 +9,7 @@ class AddSteps implements Command {
      */
     private $goal;
     /**
-     * @var array|\string[]
+     * @var string[]
      */
     private $steps;
 
@@ -30,7 +30,7 @@ class AddSteps implements Command {
     }
 
     /**
-     * @return array|\string[]
+     * @return string[]
      */
     public function getSteps() {
         return $this->steps;

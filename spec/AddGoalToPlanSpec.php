@@ -18,21 +18,21 @@ class AddGoalToPlanSpec extends Specification {
     public function defaultLength() {
         $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
         $this->when(new AddGoalToPlan(new GoalIdentifier('foo')));
-        $this->then(new BlockPlanned(new BlockIdentifier('foo201112131'), new GoalIdentifier('foo'), 1, Time::now()));
+        $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_1'), new GoalIdentifier('foo'), 1, Time::now()));
     }
 
     public function lessThanAUnit() {
         $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
         $this->when(new AddGoalToPlan(new GoalIdentifier('foo'), .1));
-        $this->then(new BlockPlanned(new BlockIdentifier('foo201112131'), new GoalIdentifier('foo'), .1, Time::now()));
+        $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_1'), new GoalIdentifier('foo'), .1, Time::now()));
     }
 
     public function moreThanAUnit() {
         $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
         $this->when(new AddGoalToPlan(new GoalIdentifier('foo'), 2.25));
 
-        $this->then(new BlockPlanned(new BlockIdentifier('foo201112131'), new GoalIdentifier('foo'), 1, Time::now()));
-        $this->then(new BlockPlanned(new BlockIdentifier('foo201112132'), new GoalIdentifier('foo'), 1, Time::now()));
-        $this->then(new BlockPlanned(new BlockIdentifier('foo201112133'), new GoalIdentifier('foo'), .25, Time::now()));
+        $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_1'), new GoalIdentifier('foo'), 1, Time::now()));
+        $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_2'), new GoalIdentifier('foo'), 1, Time::now()));
+        $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_3'), new GoalIdentifier('foo'), .25, Time::now()));
     }
 }

@@ -17,7 +17,7 @@ class AddStepsSpec extends Specification {
             'one',
             'two'
         ]));
-        $this->then(new StepAdded(new StepIdentifier('fooone'), new GoalIdentifier('foo'), 'one'));
-        $this->then(new StepAdded(new StepIdentifier('footwo'), new GoalIdentifier('foo'), 'two'));
+        $this->then(new StepAdded(new StepIdentifier('foo_one'), new GoalIdentifier('foo'), 'one'));
+        $this->then(new StepAdded(new StepIdentifier('foo_two'), new GoalIdentifier('foo'), 'two'));
     }
 }

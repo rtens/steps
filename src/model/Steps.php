@@ -16,7 +16,7 @@ class Steps {
     const IDENTIFIER = 'steps';
 
     public function handleCreateGoal(CreateGoal $c) {
-        return new GoalCreated(GoalIdentifier::make($c->getName()), $c->getName(), Time::now());
+        return new GoalCreated(GoalIdentifier::make([$c->getName()]), $c->getName(), Time::now());
     }
 
     public function handleAddGoalToPlan(AddGoalToPlan $c) {
@@ -31,7 +31,7 @@ class Steps {
             $count++;
 
             $blocks[] = new BlockPlanned(
-                BlockIdentifier::make($c->getGoal() . Time::now()->format('Ymd') . $count),
+                BlockIdentifier::make([$c->getGoal(), Time::now()->format('Ymd'), $count]),
                 $c->getGoal(),
                 $units,
                 Time::now());
@@ -52,7 +52,7 @@ class Steps {
         $steps = [];
         foreach ($c->getSteps() as $step) {
             $steps[] = new StepAdded(
-                StepIdentifier::make($c->getGoal() . $step),
+                StepIdentifier::make([$c->getGoal(), $step]),
                 $c->getGoal(),
                 $step
             );
