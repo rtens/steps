@@ -2,9 +2,11 @@
 
 use rtens\steps\AddGoalToPlan;
 use rtens\steps\CreateGoal;
+use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\BlockStarted;
 use rtens\steps\events\GoalCreated;
+use rtens\steps\FinishBlock;
 use rtens\steps\StartBlock;
 
 class Steps {
@@ -38,5 +40,9 @@ class Steps {
 
     public function handleStartBlock(StartBlock $c) {
         return new BlockStarted($c->getBlock(), Time::now());
+    }
+
+    public function handleFinishBlock(FinishBlock $c){
+        return new BlockFinished($c->getBlock(), Time::now());
     }
 }
