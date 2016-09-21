@@ -1,7 +1,12 @@
 <?php namespace rtens\steps\events;
+use rtens\steps\model\BlockIdentifier;
 use rtens\steps\model\GoalIdentifier;
 
-class WorkPlanned {
+class BlockPlanned {
+    /**
+     * @var BlockIdentifier
+     */
+    private $block;
     /**
      * @var GoalIdentifier
      */
@@ -16,14 +21,23 @@ class WorkPlanned {
     private $when;
 
     /**
+     * @param BlockIdentifier $block
      * @param GoalIdentifier $goal
      * @param float $units
      * @param \DateTime $when
      */
-    public function __construct(GoalIdentifier $goal, $units, \DateTime $when) {
+    public function __construct(BlockIdentifier $block, GoalIdentifier $goal, $units, \DateTime $when) {
+        $this->block = $block;
         $this->goal = $goal;
         $this->units = $units;
         $this->when = $when;
+    }
+
+    /**
+     * @return BlockIdentifier
+     */
+    public function getBlock() {
+        return $this->block;
     }
 
     /**

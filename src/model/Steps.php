@@ -1,9 +1,9 @@
 <?php namespace rtens\steps\model;
 
+use rtens\steps\AddGoalToPlan;
 use rtens\steps\CreateGoal;
+use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\GoalCreated;
-use rtens\steps\events\WorkPlanned;
-use rtens\steps\PlanWork;
 
 class Steps {
 
@@ -13,7 +13,24 @@ class Steps {
         return new GoalCreated(GoalIdentifier::make($c->getName()), $c->getName(), Time::now());
     }
 
-    public function handlePlanWork(PlanWork $c) {
-        return new WorkPlanned($c->getGoal(), $c->getUnits(), Time::now());
+    public function handleAddGoalToPlan(AddGoalToPlan $c) {
+        $blocks = [];
+
+        $unitsLeft = $c->getUnits();
+        $count = 0
+        ;
+        while ($unitsLeft > 0) {
+            $units = $unitsLeft > 1 ? 1 : $unitsLeft;
+            $unitsLeft -= $units;
+            $count++;
+
+            $blocks[] = new BlockPlanned(
+                BlockIdentifier::make($c->getGoal() . Time::now()->format('Ymd') . $count),
+                $c->getGoal(),
+                $units,
+                Time::now());
+        }
+
+        return $blocks;
     }
 }
