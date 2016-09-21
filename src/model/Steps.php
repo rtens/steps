@@ -1,11 +1,13 @@
 <?php namespace rtens\steps\model;
 
 use rtens\steps\AddGoalToPlan;
+use rtens\steps\AddSteps;
 use rtens\steps\CreateGoal;
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\BlockStarted;
 use rtens\steps\events\GoalCreated;
+use rtens\steps\events\StepAdded;
 use rtens\steps\FinishBlock;
 use rtens\steps\StartBlock;
 
@@ -44,5 +46,17 @@ class Steps {
 
     public function handleFinishBlock(FinishBlock $c){
         return new BlockFinished($c->getBlock(), Time::now());
+    }
+
+    public function handleAddSteps(AddSteps $c){
+        $steps = [];
+        foreach ($c->getSteps() as $step) {
+            $steps[] = new StepAdded(
+                StepIdentifier::make($c->getGoal() . $step),
+                $c->getGoal(),
+                $step
+            );
+        }
+        return $steps;
     }
 }
