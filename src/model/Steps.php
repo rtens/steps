@@ -2,12 +2,14 @@
 
 use rtens\steps\AddGoalToPlan;
 use rtens\steps\AddSteps;
+use rtens\steps\CompleteStep;
 use rtens\steps\CreateGoal;
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\BlockStarted;
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\StepAdded;
+use rtens\steps\events\StepCompleted;
 use rtens\steps\FinishBlock;
 use rtens\steps\StartBlock;
 
@@ -58,5 +60,9 @@ class Steps {
             );
         }
         return $steps;
+    }
+
+    public function handleCompleteStep(CompleteStep $c) {
+        return new StepCompleted($c->getStep(), Time::now());
     }
 }

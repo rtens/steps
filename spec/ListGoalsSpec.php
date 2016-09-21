@@ -3,6 +3,7 @@
 use rtens\steps\app\Application;
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\StepAdded;
+use rtens\steps\events\StepCompleted;
 use rtens\steps\ListGoals;
 use rtens\steps\model\Goal;
 use rtens\steps\model\GoalIdentifier;
@@ -29,12 +30,28 @@ class ListGoalsSpec extends Specification {
 
     public function withSteps() {
         $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
-        $this->given(new StepAdded(new StepIdentifier('fooOne'), new GoalIdentifier('foo'), 'one'));
+        $this->given(new StepAdded(new StepIdentifier('foo_one'), new GoalIdentifier('foo'), 'one'));
         $this->when(new ListGoals());
         $this->then->returnShouldMatch(function (GoalList $list) {
             return $list->getGoals() == [
                 new Goal(new GoalIdentifier('foo'), 'Foo', [
-                    new StepIdentifier('fooOne')
+                    new StepIdentifier('foo_one')
+                ])
+            ];
+        });
+    }
+
+    public function hideCompletedSteps() {
+        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
+        $this->given(new StepAdded(new StepIdentifier('foo_one'), new GoalIdentifier('foo'), 'one'));
+        $this->given(new StepAdded(new StepIdentifier('foo_two'), new GoalIdentifier('foo'), 'two'));
+        $this->given(new StepCompleted(new StepIdentifier('foo_one'), Time::now()));
+        $this->when(new ListGoals());
+
+        $this->then->returnShouldMatch(function (GoalList $list) {
+            return $list->getGoals() == [
+                new Goal(new GoalIdentifier('foo'), 'Foo', [
+                    new StepIdentifier('foo_two')
                 ])
             ];
         });

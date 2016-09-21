@@ -10,7 +10,7 @@ class Goal {
      */
     private $name;
     /**
-     * @var array|StepIdentifier[]
+     * @var StepIdentifier[]
      */
     private $steps;
 
@@ -26,7 +26,7 @@ class Goal {
     }
 
     /**
-     * @return array|StepIdentifier[]
+     * @return StepIdentifier[]
      */
     public function getSteps() {
         return $this->steps;
@@ -51,5 +51,12 @@ class Goal {
      */
     public function getName() {
         return $this->name;
+    }
+
+    /**
+     * @param StepIdentifier $step
+     */
+    public function removeStep(StepIdentifier $step) {
+        $this->steps = array_values(array_diff($this->steps, [$step]));
     }
 }

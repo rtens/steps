@@ -2,6 +2,7 @@
 
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\StepAdded;
+use rtens\steps\events\StepCompleted;
 use rtens\steps\model\Goal;
 
 class GoalList {
@@ -9,6 +10,11 @@ class GoalList {
      * @var Goal[]
      */
     private $goals = [];
+
+    /**
+     * @var StepAdded[]
+     */
+    private $steps = [];
 
     /**
      * @return Goal[]
@@ -23,5 +29,11 @@ class GoalList {
 
     public function applyStepAdded(StepAdded $e) {
         $this->goals[(string)$e->getGoal()]->addStep($e->getStep());
+        $this->steps[(string)$e->getStep()] = $e;
+    }
+
+    public function applyStepCompleted(StepCompleted $e) {
+        $goal = $this->steps[(string)$e->getStep()]->getGoal();
+        $this->goals[(string)$goal]->removeStep($e->getStep());
     }
 }
