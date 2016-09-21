@@ -1,5 +1,6 @@
 <?php namespace rtens\steps\projecting;
 
+use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
@@ -35,5 +36,9 @@ class GoalList {
     public function applyStepCompleted(StepCompleted $e) {
         $goal = $this->steps[(string)$e->getStep()]->getGoal();
         $this->goals[(string)$goal]->removeStep($e->getStep());
+    }
+
+    public function applyGoalAchieved(GoalAchieved $e) {
+        unset($this->goals[(string)$e->getGoal()]);
     }
 }

@@ -1,6 +1,7 @@
 <?php namespace spec\rtens\steps;
 
 use rtens\steps\app\Application;
+use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
@@ -53,6 +54,19 @@ class ListGoalsSpec extends Specification {
                 new Goal(new GoalIdentifier('foo'), 'Foo', [
                     new StepIdentifier('foo_two')
                 ])
+            ];
+        });
+    }
+
+    public function hideAchievedGoals() {
+        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
+        $this->given(new GoalCreated(new GoalIdentifier('bar'), 'Bar', Time::now()));
+        $this->given(new GoalAchieved(new GoalIdentifier('foo'), Time::now()));
+        $this->when(new ListGoals());
+
+        $this->then->returnShouldMatch(function (GoalList $list) {
+            return $list->getGoals() == [
+                new Goal(new GoalIdentifier('bar'), 'Bar')
             ];
         });
     }

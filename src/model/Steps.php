@@ -1,5 +1,6 @@
 <?php namespace rtens\steps\model;
 
+use rtens\steps\AchieveGoal;
 use rtens\steps\AddGoalToPlan;
 use rtens\steps\AddSteps;
 use rtens\steps\CompleteStep;
@@ -7,6 +8,7 @@ use rtens\steps\CreateGoal;
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\BlockStarted;
+use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
@@ -64,5 +66,9 @@ class Steps {
 
     public function handleCompleteStep(CompleteStep $c) {
         return new StepCompleted($c->getStep(), Time::now());
+    }
+
+    public function handleAchieveGoal(AchieveGoal $c){
+        return new GoalAchieved($c->getGoal(), Time::now());
     }
 }
