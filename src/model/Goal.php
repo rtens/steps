@@ -1,9 +1,6 @@
-<?php namespace rtens\steps\events;
+<?php namespace rtens\steps\model;
 
-class GoalCreated {
-    /**
-     * @var string
-     */
+class Goal {
     private $name;
 
     /**
