@@ -1,8 +1,10 @@
 <?php namespace spec\rtens\steps;
 
+use rtens\domin\parameters\Html;
 use rtens\steps\app\Application;
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
+use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
 use rtens\steps\ListGoals;
@@ -67,6 +69,19 @@ class ListGoalsSpec extends Specification {
         $this->then->returnShouldMatch(function (GoalList $list) {
             return $list->getGoals() == [
                 new Goal(new GoalIdentifier('bar'), 'Bar')
+            ];
+        });
+    }
+
+    public function showNotes() {
+        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
+        $this->given(new NoteAdded(new GoalIdentifier('foo'), 'test', Time::now()));
+        $this->given(new NoteAdded(new GoalIdentifier('foo'), 'that', Time::now()));
+        $this->when(new ListGoals());
+        $this->then->returnShouldMatch(function (GoalList $list) {
+            return $list->getGoals()[0]->getNotes() == [
+                new Html('test'),
+                new Html('that'),
             ];
         });
     }

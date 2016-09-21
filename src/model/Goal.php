@@ -1,5 +1,7 @@
 <?php namespace rtens\steps\model;
 
+use rtens\domin\parameters\Html;
+
 class Goal {
     /**
      * @var GoalIdentifier
@@ -13,6 +15,10 @@ class Goal {
      * @var StepIdentifier[]
      */
     private $steps;
+    /**
+     * @var Html[]
+     */
+    private $notes = [];
 
     /**
      * @param GoalIdentifier $goal
@@ -58,5 +64,19 @@ class Goal {
      */
     public function removeStep(StepIdentifier $step) {
         $this->steps = array_values(array_diff($this->steps, [$step]));
+    }
+
+    /**
+     * @return Html[]
+     */
+    public function getNotes() {
+        return $this->notes;
+    }
+
+    /**
+     * @param string $note
+     */
+    public function addNote($note) {
+        $this->notes[] = new Html($note);
     }
 }

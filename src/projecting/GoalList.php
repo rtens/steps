@@ -2,6 +2,7 @@
 
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
+use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
 use rtens\steps\model\Goal;
@@ -40,5 +41,9 @@ class GoalList {
 
     public function applyGoalAchieved(GoalAchieved $e) {
         unset($this->goals[(string)$e->getGoal()]);
+    }
+
+    public function applyNoteAdded(NoteAdded $e) {
+        $this->goals[(string)$e->getGoal()]->addNote($e->getNote());
     }
 }

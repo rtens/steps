@@ -2,6 +2,7 @@
 
 use rtens\steps\AchieveGoal;
 use rtens\steps\AddGoalToPlan;
+use rtens\steps\AddNote;
 use rtens\steps\AddSteps;
 use rtens\steps\CompleteStep;
 use rtens\steps\CreateGoal;
@@ -10,6 +11,7 @@ use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\BlockStarted;
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
+use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
 use rtens\steps\FinishBlock;
@@ -70,5 +72,9 @@ class Steps {
 
     public function handleAchieveGoal(AchieveGoal $c){
         return new GoalAchieved($c->getGoal(), Time::now());
+    }
+
+    public function handleAddNote(AddNote $c){
+        return new NoteAdded($c->getGoal(), $c->getNoteContent(), Time::now());
     }
 }
