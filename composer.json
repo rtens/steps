@@ -9,6 +9,16 @@
       "email": "Nikolas.M@rtens.org"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "rtens\\steps\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "spec\\rtens\\steps\\": "spec/"
+    }
+  },
   "require": {
     "rtens/domin": "dev-master",
     "watoki/curir": "dev-master",
