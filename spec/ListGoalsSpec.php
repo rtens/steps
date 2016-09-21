@@ -2,6 +2,7 @@
 
 use rtens\domin\parameters\Html;
 use rtens\steps\app\Application;
+use rtens\steps\events\DeadlineSet;
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\GoalRated;
@@ -95,6 +96,15 @@ class ListGoalsSpec extends Specification {
             return
                 $list->getGoals()[0]->getImportance() == 1
                 && $list->getGoals()[0]->getUrgency() == 2;
+        });
+    }
+
+    public function showDeadline() {
+        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
+        $this->given(new DeadlineSet(new GoalIdentifier('foo'), new \DateTime('2011-12-13'), Time::now()));
+        $this->when(new ListGoals());
+        $this->then->returnShouldMatch(function (GoalList $list) {
+            return $list->getGoals()[0]->getDeadline() == new \DateTime('2011-12-13');
         });
     }
 }

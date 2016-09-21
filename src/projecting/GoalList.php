@@ -1,5 +1,6 @@
 <?php namespace rtens\steps\projecting;
 
+use rtens\steps\events\DeadlineSet;
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\GoalRated;
@@ -48,7 +49,11 @@ class GoalList {
         $this->goals[(string)$e->getGoal()]->addNote($e->getNote());
     }
 
-    public function applyGoalRated(GoalRated $e){
+    public function applyGoalRated(GoalRated $e) {
         $this->goals[(string)$e->getGoal()]->setRating($e->getImportance(), $e->getUrgency());
+    }
+
+    public function applyDeadlineSet(DeadlineSet $e) {
+        $this->goals[(string)$e->getGoal()]->setDeadline($e->getDeadline());
     }
 }

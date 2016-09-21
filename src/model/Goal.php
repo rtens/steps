@@ -21,6 +21,7 @@ class Goal {
     private $notes = [];
     private $importance;
     private $urgency;
+    private $deadline;
 
     /**
      * @param GoalIdentifier $goal
@@ -93,5 +94,13 @@ class Goal {
     public function setRating($importance, $urgency) {
         $this->importance = $importance;
         $this->urgency = $urgency;
+    }
+
+    public function getDeadline() {
+        return $this->deadline;
+    }
+
+    public function setDeadline(\DateTime $deadline) {
+        $this->deadline = $deadline;
     }
 }
