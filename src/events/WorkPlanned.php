@@ -1,16 +1,15 @@
 <?php namespace rtens\steps\events;
-
 use rtens\steps\model\GoalIdentifier;
 
-class GoalCreated {
+class WorkPlanned {
     /**
      * @var GoalIdentifier
      */
     private $goal;
     /**
-     * @var string
+     * @var float
      */
-    private $name;
+    private $units;
     /**
      * @var \DateTime
      */
@@ -18,12 +17,12 @@ class GoalCreated {
 
     /**
      * @param GoalIdentifier $goal
-     * @param string $name
+     * @param float $units
      * @param \DateTime $when
      */
-    public function __construct(GoalIdentifier $goal, $name, \DateTime $when) {
-        $this->name = $name;
+    public function __construct(GoalIdentifier $goal, $units, \DateTime $when) {
         $this->goal = $goal;
+        $this->units = $units;
         $this->when = $when;
     }
 
@@ -35,10 +34,10 @@ class GoalCreated {
     }
 
     /**
-     * @return string
+     * @return float
      */
-    public function getName() {
-        return $this->name;
+    public function getUnits() {
+        return $this->units;
     }
 
     /**

@@ -12,6 +12,6 @@ class GoalList {
     }
 
     public function applyGoalCreated(GoalCreated $e) {
-        $this->goals[] = new Goal($e->getName());
+        $this->goals[] = new Goal($e->getGoal(), $e->getName());
     }
 }
