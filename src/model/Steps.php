@@ -11,10 +11,12 @@ use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\BlockStarted;
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
+use rtens\steps\events\GoalRated;
 use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
 use rtens\steps\FinishBlock;
+use rtens\steps\RateGoal;
 use rtens\steps\StartBlock;
 
 class Steps {
@@ -76,5 +78,9 @@ class Steps {
 
     public function handleAddNote(AddNote $c){
         return new NoteAdded($c->getGoal(), $c->getNoteContent(), Time::now());
+    }
+
+    public function handleRateGoal(RateGoal $c) {
+        return new GoalRated($c->getGoal(), $c->getImportance(), $c->getUrgency(), Time::now());
     }
 }

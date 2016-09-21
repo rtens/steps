@@ -19,6 +19,8 @@ class Goal {
      * @var Html[]
      */
     private $notes = [];
+    private $importance;
+    private $urgency;
 
     /**
      * @param GoalIdentifier $goal
@@ -78,5 +80,18 @@ class Goal {
      */
     public function addNote($note) {
         $this->notes[] = new Html($note);
+    }
+
+    public function getImportance() {
+        return $this->importance;
+    }
+
+    public function getUrgency() {
+        return $this->urgency;
+    }
+
+    public function setRating($importance, $urgency) {
+        $this->importance = $importance;
+        $this->urgency = $urgency;
     }
 }

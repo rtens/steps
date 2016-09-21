@@ -2,6 +2,7 @@
 
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
+use rtens\steps\events\GoalRated;
 use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
@@ -45,5 +46,9 @@ class GoalList {
 
     public function applyNoteAdded(NoteAdded $e) {
         $this->goals[(string)$e->getGoal()]->addNote($e->getNote());
+    }
+
+    public function applyGoalRated(GoalRated $e){
+        $this->goals[(string)$e->getGoal()]->setRating($e->getImportance(), $e->getUrgency());
     }
 }

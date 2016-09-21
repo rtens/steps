@@ -4,6 +4,7 @@ use rtens\domin\parameters\Html;
 use rtens\steps\app\Application;
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
+use rtens\steps\events\GoalRated;
 use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
@@ -83,6 +84,17 @@ class ListGoalsSpec extends Specification {
                 new Html('test'),
                 new Html('that'),
             ];
+        });
+    }
+
+    public function showRating() {
+        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
+        $this->given(new GoalRated(new GoalIdentifier('foo'), 1, 2, Time::now()));
+        $this->when(new ListGoals());
+        $this->then->returnShouldMatch(function (GoalList $list) {
+            return
+                $list->getGoals()[0]->getImportance() == 1
+                && $list->getGoals()[0]->getUrgency() == 2;
         });
     }
 }
