@@ -51,11 +51,11 @@ class Steps {
     }
 
     public function handleStartBlock(StartBlock $c) {
-        return new BlockStarted($c->getBlock(), Time::now());
+        return new BlockStarted($c->getBlock(), $c->getWhen());
     }
 
     public function handleFinishBlock(FinishBlock $c){
-        return new BlockFinished($c->getBlock(), Time::now());
+        return new BlockFinished($c->getBlock(), $c->getWhen());
     }
 
     public function handleAddSteps(AddSteps $c){
@@ -75,7 +75,7 @@ class Steps {
     }
 
     public function handleAchieveGoal(AchieveGoal $c){
-        return new GoalAchieved($c->getGoal(), Time::now());
+        return new GoalAchieved($c->getGoal(), $c->getWhen());
     }
 
     public function handleAddNote(AddNote $c){

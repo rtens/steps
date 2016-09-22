@@ -12,8 +12,13 @@ class FinishBlockSpec extends Specification {
         parent::__construct(Application::sandbox());
     }
 
-    public function success() {
+    public function now() {
         $this->when(new FinishBlock(new BlockIdentifier('foo')));
         $this->then(new BlockFinished(new BlockIdentifier('foo'), Time::now()));
+    }
+
+    public function before() {
+        $this->when(new FinishBlock(new BlockIdentifier('foo'), new \DateTime('2011-12-13')));
+        $this->then(new BlockFinished(new BlockIdentifier('foo'), new \DateTime('2011-12-13')));
     }
 }

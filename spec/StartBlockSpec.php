@@ -13,8 +13,13 @@ class StartBlockSpec extends Specification {
         parent::__construct(Application::sandbox());
     }
 
-    public function success() {
+    public function now() {
         $this->when(new StartBlock(new BlockIdentifier('foo')));
         $this->then(new BlockStarted(new BlockIdentifier('foo'), Time::now()));
+    }
+
+    public function before() {
+        $this->when(new StartBlock(new BlockIdentifier('foo'), new \DateTime('2011-12-13')));
+        $this->then(new BlockStarted(new BlockIdentifier('foo'), new \DateTime('2011-12-13')));
     }
 }
