@@ -25,6 +25,11 @@ class Steps {
 
     const IDENTIFIER = 'steps';
 
+    /**
+     * @var null|BlockIdentifier
+     */
+    private $currentBlock;
+
     public function handleCreateGoal(CreateGoal $c) {
         return new GoalCreated(GoalIdentifier::make([$c->getName()]), $c->getName(), Time::now());
     }
@@ -51,11 +56,30 @@ class Steps {
     }
 
     public function handleStartBlock(StartBlock $c) {
+        if ($this->currentBlock) {
+            throw new \Exception('A block has already been started.');
+        }
+
         return new BlockStarted($c->getBlock(), $c->getWhen());
     }
 
+    public function applyBlockStarted(BlockStarted $e) {
+        $this->currentBlock = $e->getBlock();
+    }
+
     public function handleFinishBlock(FinishBlock $c){
+        if (!$this->currentBlock) {
+            throw new \Exception('No block was started.');
+        }
+        if ($this->currentBlock != $c->getBlock()) {
+            throw new \Exception('This is not the current block.');
+        }
+
         return new BlockFinished($c->getBlock(), $c->getWhen());
+    }
+
+    public function applyBlockFinished(){
+        $this->currentBlock = null;
     }
 
     public function handleAddSteps(AddSteps $c){

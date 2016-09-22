@@ -17,7 +17,7 @@ class AchieveGoalSpec extends Specification {
         $this->then(new GoalAchieved(new GoalIdentifier('foo'), Time::now()));
     }
 
-    public function before(){
+    public function history(){
         $this->when(new AchieveGoal(new GoalIdentifier('foo'), new \DateTime('2011-12-13')));
         $this->then(new GoalAchieved(new GoalIdentifier('foo'), new \DateTime('2011-12-13')));
     }
