@@ -30,6 +30,10 @@ class Steps {
      * @var null|BlockIdentifier
      */
     private $currentBlock;
+    /**
+     * @var BlockIdentifier[]
+     */
+    private $finishedBlocks = [];
 
     public function handleCreateGoal(CreateGoal $c) {
         return new GoalCreated(GoalIdentifier::make([$c->getName()]), $c->getName(), Time::now());
@@ -59,6 +63,9 @@ class Steps {
         if ($this->currentBlock) {
             throw new \Exception('A block has already been started.');
         }
+        if (in_array($c->getBlock(), $this->finishedBlocks)) {
+            throw new \Exception('This block is already finished.');
+        }
 
         return new BlockStarted($c->getBlock(), $c->getWhen());
     }
@@ -78,8 +85,9 @@ class Steps {
         return new BlockFinished($c->getBlock(), $c->getWhen());
     }
 
-    public function applyBlockFinished() {
+    public function applyBlockFinished(BlockFinished $e) {
         $this->currentBlock = null;
+        $this->finishedBlocks[] = $e->getBlock();
     }
 
     public function handleAddSteps(AddSteps $c) {

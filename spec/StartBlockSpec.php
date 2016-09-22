@@ -1,6 +1,7 @@
 <?php namespace spec\rtens\steps;
 
 use rtens\steps\app\Application;
+use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockStarted;
 use rtens\steps\model\BlockIdentifier;
 use rtens\steps\model\Steps;
@@ -28,5 +29,12 @@ class StartBlockSpec extends Specification {
         $this->given(new BlockStarted(new BlockIdentifier('foo'), Time::now()), Steps::IDENTIFIER);
         $this->when->tryTo(new StartBlock(new BlockIdentifier('bar')));
         $this->then->shouldFail('A block has already been started.');
+    }
+
+    public function alreadyFinished() {
+        $this->given(new BlockStarted(new BlockIdentifier('foo'), Time::now()), Steps::IDENTIFIER);
+        $this->given(new BlockFinished(new BlockIdentifier('foo'), Time::now()), Steps::IDENTIFIER);
+        $this->when->tryTo(new StartBlock(new BlockIdentifier('foo')));
+        $this->then->shouldFail('This block is already finished.');
     }
 }
