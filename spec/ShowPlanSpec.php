@@ -11,8 +11,6 @@ use rtens\steps\model\Time;
 use rtens\steps\ShowPlan;
 use watoki\karma\testing\Specification;
 
-;
-
 class ShowPlanSpec extends Specification {
 
     public function __construct() {
