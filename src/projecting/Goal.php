@@ -1,6 +1,8 @@
-<?php namespace rtens\steps\model;
+<?php namespace rtens\steps\projecting;
 
 use rtens\domin\parameters\Html;
+use rtens\steps\model\GoalIdentifier;
+use rtens\steps\model\StepIdentifier;
 
 class Goal {
     /**

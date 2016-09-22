@@ -3,11 +3,11 @@
 use rtens\steps\app\Application;
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
-use rtens\steps\model\Block;
 use rtens\steps\model\BlockIdentifier;
 use rtens\steps\model\GoalIdentifier;
-use rtens\steps\model\Plan;
 use rtens\steps\model\Time;
+use rtens\steps\projecting\Block;
+use rtens\steps\projecting\Plan;
 use rtens\steps\ShowPlan;
 use watoki\karma\testing\Specification;
 

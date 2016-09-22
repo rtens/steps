@@ -10,10 +10,10 @@ use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
 use rtens\steps\ListGoals;
-use rtens\steps\model\Goal;
 use rtens\steps\model\GoalIdentifier;
 use rtens\steps\model\StepIdentifier;
 use rtens\steps\model\Time;
+use rtens\steps\projecting\Goal;
 use rtens\steps\projecting\GoalList;
 use watoki\karma\testing\Specification;
 

@@ -7,7 +7,6 @@ use rtens\steps\events\GoalRated;
 use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
-use rtens\steps\model\Goal;
 
 class GoalList {
     /**

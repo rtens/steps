@@ -1,5 +1,5 @@
 <?php namespace rtens\steps;
-use rtens\steps\model\Plan;
+use rtens\steps\projecting\Plan;
 use watoki\karma\implementations\commandQuery\Query;
 
 class ShowPlan implements Query {

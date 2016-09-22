@@ -1,4 +1,4 @@
-<?php namespace rtens\steps\model;
+<?php namespace rtens\steps\projecting;
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
 

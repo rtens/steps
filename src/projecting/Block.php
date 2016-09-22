@@ -1,4 +1,7 @@
-<?php namespace rtens\steps\model;
+<?php namespace rtens\steps\projecting;
+use rtens\steps\model\BlockIdentifier;
+use rtens\steps\model\GoalIdentifier;
+
 class Block {
     /**
      * @var BlockIdentifier
