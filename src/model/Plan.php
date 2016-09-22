@@ -3,11 +3,19 @@ use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
 
 class Plan {
-
     /**
      * @var Block[]
      */
     private $blocks = [];
+
+    /**
+     * @return float
+     */
+    public function getUnits() {
+        return array_sum(array_map(function (Block $block) {
+            return $block->getUnits();
+        }, $this->blocks));
+    }
 
     /**
      * @return Block[]

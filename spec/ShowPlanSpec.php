@@ -43,4 +43,14 @@ class ShowPlanSpec extends Specification {
                 && $plan->getBlocks()[0]->getBlock() == new BlockIdentifier('barBlock');
         });
     }
+
+    public function sumUnits() {
+        $this->given(new BlockPlanned(new BlockIdentifier('fooBlock'), new GoalIdentifier('foo'), .5, Time::now()));
+        $this->given(new BlockPlanned(new BlockIdentifier('barBlock'), new GoalIdentifier('bar'), .8, Time::now()));
+        $this->when(new ShowPlan());
+
+        $this->then->returnShouldMatch(function (Plan $plan) {
+            return $plan->getUnits() == 1.3;
+        });
+    }
 }
