@@ -24,6 +24,7 @@ use rtens\steps\StartBlock;
 class Steps {
 
     const IDENTIFIER = 'steps';
+    const UNIT_SECONDS = 25 * 60;
 
     /**
      * @var null|BlockIdentifier
@@ -38,8 +39,7 @@ class Steps {
         $blocks = [];
 
         $unitsLeft = $c->getUnits();
-        $count = 0
-        ;
+        $count = 0;
         while ($unitsLeft > 0) {
             $units = $unitsLeft > 1 ? 1 : $unitsLeft;
             $unitsLeft -= $units;
@@ -67,7 +67,7 @@ class Steps {
         $this->currentBlock = $e->getBlock();
     }
 
-    public function handleFinishBlock(FinishBlock $c){
+    public function handleFinishBlock(FinishBlock $c) {
         if (!$this->currentBlock) {
             throw new \Exception('No block was started.');
         }
@@ -78,11 +78,11 @@ class Steps {
         return new BlockFinished($c->getBlock(), $c->getWhen());
     }
 
-    public function applyBlockFinished(){
+    public function applyBlockFinished() {
         $this->currentBlock = null;
     }
 
-    public function handleAddSteps(AddSteps $c){
+    public function handleAddSteps(AddSteps $c) {
         $steps = [];
         foreach ($c->getSteps() as $step) {
             $steps[] = new StepAdded(
@@ -98,11 +98,11 @@ class Steps {
         return new StepCompleted($c->getStep(), Time::now());
     }
 
-    public function handleAchieveGoal(AchieveGoal $c){
+    public function handleAchieveGoal(AchieveGoal $c) {
         return new GoalAchieved($c->getGoal(), $c->getWhen());
     }
 
-    public function handleAddNote(AddNote $c){
+    public function handleAddNote(AddNote $c) {
         return new NoteAdded($c->getGoal(), $c->getNoteContent(), Time::now());
     }
 
