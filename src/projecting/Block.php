@@ -3,6 +3,10 @@ use rtens\steps\model\BlockIdentifier;
 
 class Block {
     /**
+     * @var BlockIdentifier
+     */
+    private $block;
+    /**
      * @var float
      */
     private $units;
