@@ -72,7 +72,33 @@ class CurrentBlockRenderer extends TransformingRenderer {
                 '])
             ];
         } else {
-            $elements[] = new Element('h3', [], ["Time's up! (" . round($block->getSpentUnits(), 1) . ' units spent)']);
+            $elements[] = [
+                new Element('div', ['class' => 'countdown', 'style' => 'display: none; margin-top: 3em;']),
+                new Element('script', [], ['
+                var snooze = function(minutes) {
+                    $(".countdown").show();
+                    $(".timeUp").hide();
+
+                    var clock = $(".countdown").FlipClock(minutes * 60, {
+                        countdown: true,
+                        clockFace: "MinuteCounter",
+                        stop: function () {
+                            onStop();
+                            onStop = function () {};
+                        }
+                    });
+                    var onStop = function () {
+                        var audio = new Audio("http://soundbible.com/grab.php?id=1477&type=mp3");
+                        audio.play();
+                    };
+                };
+                ']),
+                new Element('h3', ["class" => "timeUp"], [
+                    "Time's up! (" . round($block->getSpentUnits(), 1) . ' units spent)',
+                    new Element('a', ['class' => 'btn btn-warning', 'onclick' => 'snooze(5)'], ['Snooze 5']),
+                    new Element('a', ['class' => 'btn btn-danger', 'onclick' => 'snooze(10)'], ['Snooze 10'])
+                ])
+            ];
         }
 
         $elements[] = new Element('a', [
