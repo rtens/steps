@@ -103,10 +103,14 @@ class Block {
     }
 
     public function getSpentUnits() {
-        if (!$this->finished || !$this->started) {
+        if (!$this->started) {
             return 0;
         }
-        return ($this->finished->getTimestamp() - $this->started->getTimestamp()) / Steps::UNIT_SECONDS;
+
+        $started = $this->started->getTimestamp();
+        $finished = $this->finished ? $this->finished->getTimestamp() : Time::now()->getTimestamp();
+
+        return ($finished - $started) / Steps::UNIT_SECONDS;
     }
 
     /**
