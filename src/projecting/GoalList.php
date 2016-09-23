@@ -31,6 +31,7 @@ class GoalList {
 
     public function applyGoalCreated(GoalCreated $e) {
         $this->goals[] = new Goal($e->getGoal());
+        $this->apply(__FUNCTION__, $e);
     }
 
     public function applyStepAdded(StepAdded $e) {
