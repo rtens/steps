@@ -27,4 +27,11 @@ abstract class Identifier {
     function __toString() {
         return $this->key;
     }
+
+    /**
+     * @return string
+     */
+    public function getKey() {
+        return $this->key;
+    }
 }
