@@ -1,6 +1,5 @@
 <?php namespace spec\rtens\steps;
 use rtens\steps\app\Application;
-use rtens\steps\events\GoalCreated;
 use rtens\steps\events\BlockPlanned;
 use rtens\steps\model\BlockIdentifier;
 use rtens\steps\model\GoalIdentifier;
@@ -16,23 +15,25 @@ class PlanBlockSpec extends Specification {
     }
 
     public function defaultLength() {
-        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
         $this->when(new PlanBlock(new GoalIdentifier('foo')));
         $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_1'), new GoalIdentifier('foo'), 1, Time::now()));
     }
 
     public function lessThanAUnit() {
-        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
         $this->when(new PlanBlock(new GoalIdentifier('foo'), .1));
         $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_1'), new GoalIdentifier('foo'), .1, Time::now()));
     }
 
     public function moreThanAUnit() {
-        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
         $this->when(new PlanBlock(new GoalIdentifier('foo'), 2.25));
 
         $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_1'), new GoalIdentifier('foo'), 1, Time::now()));
         $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_2'), new GoalIdentifier('foo'), 1, Time::now()));
         $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_3'), new GoalIdentifier('foo'), .25, Time::now()));
+    }
+
+    public function bigBlock() {
+        $this->when(new PlanBlock(new GoalIdentifier('foo'), 3.5, false));
+        $this->then(new BlockPlanned(new BlockIdentifier('foo_20111213_1'), new GoalIdentifier('foo'), 3.5, Time::now()));
     }
 }

@@ -13,14 +13,20 @@ class PlanBlock implements Command {
      * @var float
      */
     private $units;
+    /**
+     * @var bool
+     */
+    private $splitIntoUnits;
 
     /**
      * @param GoalIdentifier $goal
      * @param float $units
+     * @param bool $splitIntoUnits
      */
-    public function __construct(GoalIdentifier $goal, $units = 1.0) {
+    public function __construct(GoalIdentifier $goal, $units = 1.0, $splitIntoUnits = true) {
         $this->goal = $goal;
         $this->units = $units;
+        $this->splitIntoUnits = $splitIntoUnits;
     }
 
     /**
@@ -35,6 +41,13 @@ class PlanBlock implements Command {
      */
     public function getUnits() {
         return $this->units;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSplitIntoUnits() {
+        return $this->splitIntoUnits;
     }
 
     /**

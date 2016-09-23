@@ -45,7 +45,10 @@ class Steps {
         $unitsLeft = $c->getUnits();
         $count = 0;
         while ($unitsLeft > 0) {
-            $units = $unitsLeft > 1 ? 1 : $unitsLeft;
+            $units = $unitsLeft;
+            if ($c->isSplitIntoUnits() && $unitsLeft > 1) {
+                $units = 1;
+            }
             $unitsLeft -= $units;
             $count++;
 
