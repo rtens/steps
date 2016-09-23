@@ -10,6 +10,10 @@ class Step {
      * @var string
      */
     private $description;
+    /**
+     * @var null|\DateTime
+     */
+    private $completed;
 
     /**
      * @param StepIdentifier $step
@@ -32,5 +36,13 @@ class Step {
      */
     public function getDescription() {
         return $this->description;
+    }
+
+    public function setCompleted(\DateTime $when) {
+        $this->completed = $when;
+    }
+
+    public function isCompleted() {
+        return !!$this->completed;
     }
 }

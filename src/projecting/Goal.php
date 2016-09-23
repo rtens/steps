@@ -1,8 +1,14 @@
 <?php namespace rtens\steps\projecting;
 
 use rtens\domin\parameters\Html;
+use rtens\steps\events\DeadlineSet;
+use rtens\steps\events\GoalAchieved;
+use rtens\steps\events\GoalCreated;
+use rtens\steps\events\GoalRated;
+use rtens\steps\events\NoteAdded;
+use rtens\steps\events\StepAdded;
+use rtens\steps\events\StepCompleted;
 use rtens\steps\model\GoalIdentifier;
-use rtens\steps\model\StepIdentifier;
 
 class Goal {
     /**
@@ -21,48 +27,28 @@ class Goal {
      * @var Html[]
      */
     private $notes = [];
+    /**
+     * @var float
+     */
     private $importance;
+    /**
+     * @var float
+     */
     private $urgency;
+    /**
+     * @var \DateTime
+     */
     private $deadline;
+    /**
+     * @var null|\DateTime
+     */
+    private $achieved;
 
     /**
      * @param GoalIdentifier $goal
-     * @param string $name
      */
-    public function __construct(GoalIdentifier $goal, $name) {
-        $this->name = $name;
+    public function __construct(GoalIdentifier $goal) {
         $this->goal = $goal;
-    }
-
-    /**
-     * @return Step[]
-     */
-    public function getSteps() {
-        return array_values($this->steps);
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getNextStep() {
-        if (!$this->steps) {
-            return null;
-        }
-        return $this->getSteps()[0]->getDescription();
-    }
-
-    /**
-     * @param Step $step
-     */
-    public function addStep(Step $step) {
-        $this->steps[(string)$step->getStep()] = $step;
-    }
-
-    /**
-     * @param StepIdentifier $step
-     */
-    public function removeStep(StepIdentifier $step) {
-        unset($this->steps[(string)$step]);
     }
 
     /**
@@ -80,37 +66,95 @@ class Goal {
     }
 
     /**
-     * @return Html[]
+     * @return Step[]
      */
-    public function getNotes() {
-        return $this->notes;
+    public function getSteps() {
+        return array_values(array_filter($this->steps, function (Step $step) {
+            return !$step->isCompleted();
+        }));
     }
 
     /**
-     * @param string $note
+     * @return \rtens\domin\parameters\Html[]
      */
-    public function addNote($note) {
-        $this->notes[] = new Html($note);
+    public function getNotes() {
+        return array_map(function ($note) {
+            return new Html($note);
+        }, $this->notes);
     }
 
+    /**
+     * @return float
+     */
     public function getImportance() {
         return $this->importance;
     }
 
+    /**
+     * @return float
+     */
     public function getUrgency() {
         return $this->urgency;
     }
 
-    public function setRating($importance, $urgency) {
-        $this->importance = $importance;
-        $this->urgency = $urgency;
-    }
-
+    /**
+     * @return \DateTime
+     */
     public function getDeadline() {
         return $this->deadline;
     }
 
-    public function setDeadline(\DateTime $deadline) {
-        $this->deadline = $deadline;
+    /**
+     * @return bool
+     */
+    public function wasAchieved() {
+        return !!$this->achieved;
+    }
+
+    public function applyGoalCreated(GoalCreated $e) {
+        $this->name = $e->getName();
+    }
+
+    public function applyStepAdded(StepAdded $e) {
+        if ($this->goal != $e->getGoal()) {
+            return;
+        }
+        $this->steps[(string)$e->getStep()] = new Step($e->getStep(), $e->getDescription());
+    }
+
+    public function applyStepCompleted(StepCompleted $e) {
+        if (!array_key_exists((string)$e->getStep(), $this->steps)) {
+            return;
+        }
+        $this->steps[(string)$e->getStep()]->setCompleted($e->getWhen());
+    }
+
+    public function applyGoalAchieved(GoalAchieved $e) {
+        if ($this->goal != $e->getGoal()) {
+            return;
+        }
+        $this->achieved = $e->getWhen();
+    }
+
+    public function applyNoteAdded(NoteAdded $e) {
+        if (!$this->goal == $e->getGoal()) {
+            return;
+        }
+        $this->notes[] = $e->getNote();
+    }
+
+    public function applyGoalRated(GoalRated $e) {
+        if (!$this->goal == $e->getGoal()) {
+            return;
+        }
+        $this->importance = $e->getImportance();
+        $this->urgency = $e->getUrgency();
+    }
+
+    public function applyDeadlineSet(DeadlineSet $e) {
+        if (!$this->goal == $e->getGoal()) {
+            return;
+        }
+        $this->deadline = $e->getDeadline();
     }
 }

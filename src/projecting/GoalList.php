@@ -15,46 +15,45 @@ class GoalList {
     private $goals = [];
 
     /**
-     * @var StepAdded[]
-     */
-    private $steps = [];
-
-    /**
      * @return Goal[]
      */
     public function getGoals() {
-        return array_values($this->goals);
+        return array_values(array_filter($this->goals, function (Goal $goal) {
+            return !$goal->wasAchieved();
+        }));
+    }
+
+    private function apply($function, $event) {
+        foreach ($this->goals as $goal) {
+            call_user_func([$goal, $function], $event);
+        }
     }
 
     public function applyGoalCreated(GoalCreated $e) {
-        $this->goals[(string)$e->getGoal()] = new Goal($e->getGoal(), $e->getName());
+        $this->goals[] = new Goal($e->getGoal());
     }
 
     public function applyStepAdded(StepAdded $e) {
-        $this->goals[(string)$e->getGoal()]->addStep(new Step(
-            $e->getStep(),
-            $e->getDescription()));
-        $this->steps[(string)$e->getStep()] = $e;
+        $this->apply(__FUNCTION__, $e);
     }
 
     public function applyStepCompleted(StepCompleted $e) {
-        $goal = $this->steps[(string)$e->getStep()]->getGoal();
-        $this->goals[(string)$goal]->removeStep($e->getStep());
+        $this->apply(__FUNCTION__, $e);
     }
 
     public function applyGoalAchieved(GoalAchieved $e) {
-        unset($this->goals[(string)$e->getGoal()]);
+        $this->apply(__FUNCTION__, $e);
     }
 
     public function applyNoteAdded(NoteAdded $e) {
-        $this->goals[(string)$e->getGoal()]->addNote($e->getNote());
+        $this->apply(__FUNCTION__, $e);
     }
 
     public function applyGoalRated(GoalRated $e) {
-        $this->goals[(string)$e->getGoal()]->setRating($e->getImportance(), $e->getUrgency());
+        $this->apply(__FUNCTION__, $e);
     }
 
     public function applyDeadlineSet(DeadlineSet $e) {
-        $this->goals[(string)$e->getGoal()]->setDeadline($e->getDeadline());
+        $this->apply(__FUNCTION__, $e);
     }
 }
