@@ -66,6 +66,13 @@ class Goal {
     }
 
     /**
+     * @return int
+     */
+    public function getStepCount() {
+        return count($this->getSteps());
+    }
+
+    /**
      * @return null|string
      */
     public function getNextStep() {
