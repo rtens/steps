@@ -3,7 +3,7 @@ use rtens\steps\model\GoalIdentifier;
 use rtens\steps\model\Steps;
 use watoki\karma\implementations\commandQuery\Command;
 
-class AddGoalToPlan implements Command {
+class PlanBlock implements Command {
 
     /**
      * @var GoalIdentifier

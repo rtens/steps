@@ -1,7 +1,7 @@
 <?php namespace rtens\steps\model;
 
 use rtens\steps\AchieveGoal;
-use rtens\steps\AddGoalToPlan;
+use rtens\steps\PlanBlock;
 use rtens\steps\AddNote;
 use rtens\steps\AddSteps;
 use rtens\steps\CompleteStep;
@@ -39,7 +39,7 @@ class Steps {
         return new GoalCreated(GoalIdentifier::make([$c->getName()]), $c->getName(), Time::now());
     }
 
-    public function handleAddGoalToPlan(AddGoalToPlan $c) {
+    public function handlePlanBlock(PlanBlock $c) {
         $blocks = [];
 
         $unitsLeft = $c->getUnits();
