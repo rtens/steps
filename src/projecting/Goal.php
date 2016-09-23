@@ -44,6 +44,16 @@ class Goal {
     }
 
     /**
+     * @return null|StepIdentifier
+     */
+    public function getNextStep() {
+        if (!$this->steps) {
+            return null;
+        }
+        return $this->steps[0];
+    }
+
+    /**
      * @param StepIdentifier $step
      */
     public function addStep(StepIdentifier $step) {

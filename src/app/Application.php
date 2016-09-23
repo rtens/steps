@@ -22,6 +22,7 @@ class Application extends CommandQueryApplication {
     public function run(WebApplication $curir) {
         $curir->setNameAndBrand('steps');
         $this->registerActions($curir);
+        $curir->renderers->add(new GoalListRenderer($curir->renderers, $curir->types));
     }
 
     private function registerActions(WebApplication $curir) {
