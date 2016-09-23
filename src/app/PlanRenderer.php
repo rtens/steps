@@ -1,5 +1,7 @@
 <?php namespace rtens\steps\app;
+
 use rtens\domin\delivery\RendererRegistry;
+use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\renderers\tables\types\DataTable;
 use rtens\domin\delivery\web\renderers\tables\types\ObjectTable;
 use rtens\domin\reflection\types\TypeFactory;
@@ -40,4 +42,17 @@ class PlanRenderer extends TransformingRenderer {
 
         return new DataTable($table);
     }
+
+    public function render($value) {
+        return
+            parent::render($value) .
+            new Element('a', [
+                'href' => 'sortPlan',
+                'class' => 'btn btn-primary'
+            ], [
+                'Sort Plan'
+            ]);
+    }
+
+
 }

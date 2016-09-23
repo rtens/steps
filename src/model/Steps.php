@@ -1,13 +1,12 @@
 <?php namespace rtens\steps\model;
 
 use rtens\steps\AchieveGoal;
-use rtens\steps\CancelBlock;
-use rtens\steps\events\BlockCancelled;
-use rtens\steps\PlanBlock;
 use rtens\steps\AddNote;
 use rtens\steps\AddSteps;
+use rtens\steps\CancelBlock;
 use rtens\steps\CompleteStep;
 use rtens\steps\CreateGoal;
+use rtens\steps\events\BlockCancelled;
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\BlockStarted;
@@ -16,11 +15,14 @@ use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\GoalRated;
 use rtens\steps\events\NoteAdded;
+use rtens\steps\events\PlanSorted;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
 use rtens\steps\FinishBlock;
+use rtens\steps\PlanBlock;
 use rtens\steps\RateGoal;
 use rtens\steps\SetDeadline;
+use rtens\steps\SortPlan;
 use rtens\steps\StartBlock;
 
 class Steps {
@@ -137,5 +139,9 @@ class Steps {
             throw new \Exception('Cannot cancel a block after it has been started.');
         }
         return new BlockCancelled($c->getBlock(), Time::now());
+    }
+
+    public function handleSortPlan(SortPlan $c) {
+        return new PlanSorted($c->getBlocks(), Time::now());
     }
 }

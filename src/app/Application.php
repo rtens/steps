@@ -44,8 +44,13 @@ class Application extends CommandQueryApplication {
         foreach ($this->findClassesIn(__DIR__ . '/..') as $class) {
             $id = $this->makeActionId($class);
             $action = $this->makeAction($curir, $class);
-            $action->generic()
-                ->setModifying(!is_subclass_of($class, Query::class));
+            $action->generic()->setModifying(!is_subclass_of($class, Query::class));
+
+            if (method_exists($class, 'fill')) {
+                $action->generic()->setFill(function ($parameters) use ($class) {
+                    return call_user_func([$class, 'fill'], $this, $parameters);
+                });
+            }
 
             $curir->actions->add($id, $action);
 
