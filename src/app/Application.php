@@ -1,5 +1,6 @@
 <?php namespace rtens\steps\app;
 
+use rtens\domin\delivery\web\menu\ActionMenuItem;
 use rtens\domin\delivery\web\renderers\link\types\ClassLink;
 use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\reflection\GenericObjectAction;
@@ -29,6 +30,11 @@ class Application extends CommandQueryApplication {
         $this->registerActions($curir);
         $curir->renderers->add(new GoalListRenderer($curir->renderers, $curir->types));
         $curir->renderers->add(new PlanRenderer($curir->renderers, $curir->types));
+
+        $curir->menu->add(new ActionMenuItem('Goals', 'listGoals'));
+        $curir->menu->add(new ActionMenuItem('Plan', 'showPlan'));
+        $curir->menu->add(new ActionMenuItem('Current', 'showCurrentBlock'));
+        $curir->menu->add(new ActionMenuItem('Finished', 'showFinishedBlocks'));
     }
 
     private function registerActions(WebApplication $curir) {
