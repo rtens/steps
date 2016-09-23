@@ -1,6 +1,6 @@
 <?php namespace rtens\steps\projecting;
 
-class CurrentBlock extends BlockList {
+class CurrentBlocks extends BlockList {
 
     /**
      * @return Block[]
