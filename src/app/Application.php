@@ -1,6 +1,7 @@
 <?php namespace rtens\steps\app;
 
 use rtens\domin\delivery\web\menu\ActionMenuItem;
+use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\renderers\link\types\ClassLink;
 use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\reflection\GenericObjectAction;
@@ -32,9 +33,12 @@ class Application extends CommandQueryApplication {
         $curir->renderers->add(new PlanRenderer($curir->renderers, $curir->types));
         $curir->renderers->add(new FinishedBlocksRenderer($curir->renderers, $curir->types));
 
+        $linkPrinter = new LinkPrinter($curir->links, $curir->actions, $curir->parser, $curir->token);
+        $curir->renderers->add(new CurrentBlockRenderer($curir->renderers, $linkPrinter));
+
         $curir->menu->add(new ActionMenuItem('Goals', 'listGoals'));
         $curir->menu->add(new ActionMenuItem('Plan', 'showPlan'));
-        $curir->menu->add(new ActionMenuItem('Current', 'showCurrentBlocks'));
+        $curir->menu->add(new ActionMenuItem('Current', 'showCurrentBlock'));
         $curir->menu->add(new ActionMenuItem('Finished', 'showFinishedBlocks'));
     }
 

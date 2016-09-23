@@ -41,7 +41,11 @@ abstract class TransformingRenderer implements WebRenderer {
      */
     public function headElements($value) {
         $transformed = $this->transformAndCache($value);
-        return $this->getRenderer($transformed)->headElements($transformed);
+        $renderer = $this->getRenderer($transformed);
+        if (!($renderer instanceof WebRenderer)) {
+            return [];
+        }
+        return $renderer->headElements($transformed);
     }
 
     /**
