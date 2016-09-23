@@ -65,8 +65,8 @@ class CurrentBlockRenderer extends TransformingRenderer {
                         onStop = function () {};
                     }
                 });
+                var audio = new Audio("http://soundbible.com/grab.php?id=1477&type=mp3");
                 var onStop = function () {
-                    var audio = new Audio("http://soundbible.com/grab.php?id=1477&type=mp3");
                     audio.play();
                 };
                 '])
@@ -87,8 +87,8 @@ class CurrentBlockRenderer extends TransformingRenderer {
                             onStop = function () {};
                         }
                     });
+                    var audio = new Audio("http://soundbible.com/grab.php?id=1477&type=mp3");
                     var onStop = function () {
-                        var audio = new Audio("http://soundbible.com/grab.php?id=1477&type=mp3");
                         audio.play();
                     };
                 };
