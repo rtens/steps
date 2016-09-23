@@ -3,10 +3,10 @@
 use rtens\steps\app\Application;
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
+use rtens\steps\events\GoalCreated;
 use rtens\steps\model\BlockIdentifier;
 use rtens\steps\model\GoalIdentifier;
 use rtens\steps\model\Time;
-use rtens\steps\projecting\Block;
 use rtens\steps\projecting\Plan;
 use rtens\steps\ShowPlan;
 use watoki\karma\testing\Specification;
@@ -17,15 +17,19 @@ class ShowPlanSpec extends Specification {
         parent::__construct(Application::sandbox());
     }
 
+    public function before() {
+        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
+        $this->given(new GoalCreated(new GoalIdentifier('bar'), 'Bar', Time::now()));
+    }
+
     public function singleBlock() {
         $this->given(new BlockPlanned(new BlockIdentifier('fooBlock'), new GoalIdentifier('foo'), 1, Time::now()));
         $this->when(new ShowPlan());
         $this->then->returnShouldMatch(function (Plan $plan) {
-            return $plan->getBlocks() == [
-                new Block(
-                    new BlockIdentifier('fooBlock'), 1
-                )
-            ];
+            $block = $plan->getBlocks()[0];
+            return
+                $block->getBlock() == new BlockIdentifier('fooBlock')
+                && $block->getUnits() == 1;
         });
     }
 

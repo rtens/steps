@@ -1,5 +1,12 @@
 <?php namespace rtens\steps\projecting;
+use rtens\steps\events\BlockFinished;
+use rtens\steps\events\BlockPlanned;
+use rtens\steps\events\GoalCreated;
+use rtens\steps\events\StepAdded;
+use rtens\steps\events\StepCompleted;
 use rtens\steps\model\BlockIdentifier;
+use rtens\steps\model\GoalIdentifier;
+use rtens\steps\model\Time;
 
 class Block {
     /**
@@ -10,14 +17,26 @@ class Block {
      * @var float
      */
     private $units;
+    /**
+     * @var Goal
+     */
+    private $goal;
+    /**
+     * @var \DateTime
+     */
+    private $planned;
+    /**
+     * @var null|\DateTime
+     */
+    private $finished;
 
     /**
      * @param BlockIdentifier $block
-     * @param float $units
+     * @param Goal $goal
      */
-    public function __construct(BlockIdentifier $block, $units) {
+    public function __construct(BlockIdentifier $block, Goal $goal) {
         $this->block = $block;
-        $this->units = $units;
+        $this->goal = $goal;
     }
 
     /**
@@ -28,9 +47,75 @@ class Block {
     }
 
     /**
+     * @return GoalIdentifier
+     */
+    public function getGoalIdentifier() {
+        return $this->goal->getGoal();
+    }
+
+    /**
      * @return float
      */
     public function getUnits() {
         return $this->units;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGoalName() {
+        return $this->goal->getName();
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getNextStep() {
+        return $this->goal->getNextStep();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFinished() {
+        return !!$this->finished;
+    }
+
+    /**
+     * @return bool
+     */
+    public function wasPlannedToday() {
+        return $this->planned->setTime(0, 0) == Time::at('today');
+    }
+
+    public function applyBlockPlanned(BlockPlanned $e) {
+        if ($this->block != $e->getBlock()) {
+            return;
+        }
+        $this->units = $e->getUnits();
+        $this->planned = $e->getWhen();
+    }
+
+    public function applyBlockFinished(BlockFinished $e) {
+        if ($this->block != $e->getBlock()) {
+            return;
+        }
+        $this->finished = $e->getWhen();
+    }
+
+    public function applyGoalCreated(GoalCreated $e) {
+        $this->applyGoal(__FUNCTION__, $e);
+    }
+
+    public function applyStepAdded(StepAdded $e) {
+        $this->applyGoal(__FUNCTION__, $e);
+    }
+
+    public function applyStepCompleted(StepCompleted $e) {
+        $this->applyGoal(__FUNCTION__, $e);
+    }
+
+    private function applyGoal($function, $e) {
+        call_user_func([$this->goal, $function], $e);
     }
 }

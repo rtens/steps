@@ -1,13 +1,20 @@
 <?php namespace rtens\steps\projecting;
+
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
-use rtens\steps\model\Time;
+use rtens\steps\events\GoalCreated;
+use rtens\steps\events\StepAdded;
+use rtens\steps\events\StepCompleted;
 
 class Plan {
     /**
      * @var Block[]
      */
     private $blocks = [];
+    /**
+     * @var Goal[]
+     */
+    private $goals = [];
 
     /**
      * @return float
@@ -22,24 +29,36 @@ class Plan {
      * @return Block[]
      */
     public function getBlocks() {
-        return array_values($this->blocks);
+        return array_values(array_filter($this->blocks, function (Block $block) {
+            return !$block->isFinished() && $block->wasPlannedToday();
+        }));
     }
 
     public function applyBlockPlanned(BlockPlanned $e) {
-        if (!$this->wasPlannedToday($e)) {
-            return;
-        }
-
-        $this->blocks[(string)$e->getBlock()] = new Block(
-            $e->getBlock(), $e->getUnits()
-        );
+        $this->blocks[] = new Block($e->getBlock(), $this->goals[(string)$e->getGoal()]);
+        $this->apply($this->blocks, __FUNCTION__, $e);
     }
 
     public function applyBlockFinished(BlockFinished $e) {
-        unset($this->blocks[(string)$e->getBlock()]);
+        $this->apply($this->blocks, __FUNCTION__, $e);
     }
 
-    private function wasPlannedToday(BlockPlanned $e) {
-        return $e->getWhen()->setTime(0, 0) == Time::at('today');
+    private function apply($to, $function, $event) {
+        foreach ($to as $target) {
+            call_user_func([$target, $function], $event);
+        }
+    }
+
+    public function applyGoalCreated(GoalCreated $e) {
+        $this->goals[(string)$e->getGoal()] = new Goal($e->getGoal());
+        $this->apply($this->goals, __FUNCTION__, $e);
+    }
+
+    public function applyStepAdded(StepAdded $e) {
+        $this->apply($this->goals, __FUNCTION__, $e);
+    }
+
+    public function applyStepCompleted(StepCompleted $e) {
+        $this->apply($this->goals, __FUNCTION__, $e);
     }
 }

@@ -66,6 +66,16 @@ class Goal {
     }
 
     /**
+     * @return null|string
+     */
+    public function getNextStep() {
+        if (!$this->steps) {
+            return null;
+        }
+        return $this->getSteps()[0]->getDescription();
+    }
+
+    /**
      * @return Step[]
      */
     public function getSteps() {
@@ -107,11 +117,14 @@ class Goal {
     /**
      * @return bool
      */
-    public function wasAchieved() {
+    public function isAchieved() {
         return !!$this->achieved;
     }
 
     public function applyGoalCreated(GoalCreated $e) {
+        if ($this->goal != $e->getGoal()) {
+            return;
+        }
         $this->name = $e->getName();
     }
 

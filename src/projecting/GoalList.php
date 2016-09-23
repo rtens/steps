@@ -19,7 +19,7 @@ class GoalList {
      */
     public function getGoals() {
         return array_values(array_filter($this->goals, function (Goal $goal) {
-            return !$goal->wasAchieved();
+            return !$goal->isAchieved();
         }));
     }
 

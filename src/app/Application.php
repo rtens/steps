@@ -26,6 +26,7 @@ class Application extends CommandQueryApplication {
         $curir->setNameAndBrand('steps');
         $this->registerActions($curir);
         $curir->renderers->add(new GoalListRenderer($curir->renderers, $curir->types));
+        $curir->renderers->add(new PlanRenderer($curir->renderers, $curir->types));
     }
 
     private function registerActions(WebApplication $curir) {
@@ -43,7 +44,7 @@ class Application extends CommandQueryApplication {
             foreach ($reader->readInterface() as $property) {
                 $type = $property->type();
                 if ($type instanceof ClassType && is_subclass_of($type->getClass(), Identifier::class)) {
-                    $linkedActions[$type->getClass()][] = $id;
+                    $linkedActions[$type->getClass()][$id] = $property->name();
                 }
             }
         }
@@ -75,9 +76,9 @@ class Application extends CommandQueryApplication {
             foreach ($reader->readInterface() as $property) {
                 $type = $property->type();
                 if ($type instanceof ClassType && array_key_exists($type->getClass(), $linkedActions)) {
-                    foreach ($linkedActions[$type->getClass()] as $actionId) {
-                        $curir->links->add(new ClassLink($projection, $actionId, function ($object) use ($property) {
-                            return [$property->name() => ['key' => $property->get($object)]];
+                    foreach ($linkedActions[$type->getClass()] as $actionId => $propertyName) {
+                        $curir->links->add(new ClassLink($projection, $actionId, function ($object) use ($property, $propertyName) {
+                            return [$propertyName => ['key' => $property->get($object)]];
                         }));
                     }
                 }
