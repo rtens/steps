@@ -33,10 +33,11 @@ class Application extends CommandQueryApplication {
 
         foreach ($this->findClassesIn(__DIR__ . '/..') as $class) {
             $id = $this->makeActionId($class);
+            $action = $this->makeAction($curir, $class);
+            $action->generic()
+                ->setModifying(!is_subclass_of($class, Query::class));
 
-            $curir->actions->add($id,
-                $this->makeAction($curir, $class)->generic()
-                    ->setModifying(!is_subclass_of($class, Query::class)));
+            $curir->actions->add($id, $action);
 
             $reader = new PropertyReader($curir->types, $class);
             foreach ($reader->readInterface() as $property) {
