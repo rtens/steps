@@ -1,8 +1,11 @@
 <?php namespace spec\rtens\steps;
 use rtens\steps\app\Application;
 use rtens\steps\events\BlockFinished;
+use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\BlockStarted;
+use rtens\steps\events\GoalCreated;
 use rtens\steps\model\BlockIdentifier;
+use rtens\steps\model\GoalIdentifier;
 use rtens\steps\model\Time;
 use rtens\steps\projecting\CurrentBlock;
 use rtens\steps\ShowCurrentBlock;
@@ -14,12 +17,15 @@ class ShowCurrentBlockSpec extends Specification {
         parent::__construct(Application::sandbox());
     }
 
+    public function before() {
+        $this->given(new GoalCreated(new GoalIdentifier('goal'), 'Goal', Time::now()));
+        $this->given(new BlockPlanned(new BlockIdentifier('foo'), new GoalIdentifier('goal'), 1, Time::now()));
+    }
+
     public function none() {
         $this->when(new ShowCurrentBlock());
         $this->then->returnShouldMatch(function (CurrentBlock $block) {
-            return
-                $block->getBlock() == null
-                && $block->getStarted() == null;
+            return $block->getBlocks() == [];
         });
     }
 
@@ -28,8 +34,8 @@ class ShowCurrentBlockSpec extends Specification {
         $this->when(new ShowCurrentBlock());
         $this->then->returnShouldMatch(function (CurrentBlock $block) {
             return
-                $block->getBlock() == new BlockIdentifier('foo')
-                && $block->getStarted() == new \DateTime('2011-12-13');
+                $block->getBlocks()[0]->getBlock() == new BlockIdentifier('foo')
+                && $block->getBlocks()[0]->getStarted() == new \DateTime('2011-12-13');
         });
     }
 
@@ -38,9 +44,7 @@ class ShowCurrentBlockSpec extends Specification {
         $this->given(new BlockFinished(new BlockIdentifier('foo'), Time::now()));
         $this->when(new ShowCurrentBlock());
         $this->then->returnShouldMatch(function (CurrentBlock $block) {
-            return
-                $block->getBlock() == null
-                && $block->getStarted() == null;
+            return $block->getBlocks() == [];
         });
     }
 }
