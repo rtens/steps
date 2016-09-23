@@ -8,8 +8,10 @@ use rtens\steps\model\Time;
 use watoki\karma\implementations\commandQuery\CommandQueryApplication;
 use watoki\karma\implementations\commandQuery\Query;
 use watoki\karma\stores\EventStore;
+use watoki\reflect\Property;
 use watoki\reflect\PropertyReader;
 use watoki\reflect\type\ClassType;
+use watoki\reflect\type\NullableType;
 
 class Application extends CommandQueryApplication {
 
@@ -42,9 +44,9 @@ class Application extends CommandQueryApplication {
 
             $reader = new PropertyReader($curir->types, $class);
             foreach ($reader->readInterface() as $property) {
-                $type = $property->type();
-                if ($type instanceof ClassType && is_subclass_of($type->getClass(), Identifier::class)) {
-                    $linkedActions[$type->getClass()][$id] = $property->name();
+                $class = $this->getTypeClass($property);
+                if ($class && is_subclass_of($class, Identifier::class)) {
+                    $linkedActions[$class][$id] = $property->name();
                 }
             }
         }
@@ -74,9 +76,9 @@ class Application extends CommandQueryApplication {
         foreach ($this->findClassesIn(__DIR__ . '/../projecting') as $projection) {
             $reader = new PropertyReader($curir->types, $projection);
             foreach ($reader->readInterface() as $property) {
-                $type = $property->type();
-                if ($type instanceof ClassType && array_key_exists($type->getClass(), $linkedActions)) {
-                    foreach ($linkedActions[$type->getClass()] as $actionId => $propertyName) {
+                $class = $this->getTypeClass($property);
+                if ($class && array_key_exists($class, $linkedActions)) {
+                    foreach ($linkedActions[$class] as $actionId => $propertyName) {
                         $curir->links->add(new ClassLink($projection, $actionId, function ($object) use ($property, $propertyName) {
                             return [$propertyName => ['key' => $property->get($object)]];
                         }));
@@ -84,5 +86,16 @@ class Application extends CommandQueryApplication {
                 }
             }
         }
+    }
+
+    private function getTypeClass(Property $property) {
+        $type = $property->type();
+        if ($type instanceof NullableType) {
+            $type = $type->getType();
+        }
+        if ($type instanceof ClassType) {
+            return $type->getClass();
+        }
+        return null;
     }
 }
