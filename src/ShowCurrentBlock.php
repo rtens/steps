@@ -1,13 +1,13 @@
 <?php namespace rtens\steps;
-use rtens\steps\projecting\CurrentBlocks;
+use rtens\steps\projecting\CurrentBlock;
 use watoki\karma\implementations\commandQuery\Query;
 
-class ShowCurrentBlocks implements Query {
+class ShowCurrentBlock implements Query {
 
     /**
      * @return object
      */
     public function getProjection() {
-        return new CurrentBlocks();
+        return new CurrentBlock();
     }
 }
