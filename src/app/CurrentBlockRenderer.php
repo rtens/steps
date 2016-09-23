@@ -5,6 +5,8 @@ use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\renderers\link\LinkPrinter;
 use rtens\domin\delivery\web\Url;
+use rtens\steps\model\Steps;
+use rtens\steps\model\Time;
 use rtens\steps\projecting\CurrentBlock;
 
 class CurrentBlockRenderer extends TransformingRenderer {
@@ -49,7 +51,7 @@ class CurrentBlockRenderer extends TransformingRenderer {
             'started @' . $block->getStarted()->format('Y-m-d H:i')
         ];
 
-        $secondsLeft = 3; //($block->getUnits() * Steps::UNIT_SECONDS) - (Time::now()->getTimestamp() - $block->getStarted()->getTimestamp());
+        $secondsLeft = ($block->getUnits() * Steps::UNIT_SECONDS) - (Time::now()->getTimestamp() - $block->getStarted()->getTimestamp());
 
         if ($secondsLeft > 0) {
             $elements[] = [
