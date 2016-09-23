@@ -69,7 +69,7 @@ class Goal {
      * @return null|string
      */
     public function getNextStep() {
-        if (!$this->steps) {
+        if (!$this->getSteps()) {
             return null;
         }
         return $this->getSteps()[0]->getDescription();
