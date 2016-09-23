@@ -1,16 +1,7 @@
 <?php namespace rtens\steps\projecting;
 use rtens\steps\model\BlockIdentifier;
-use rtens\steps\model\GoalIdentifier;
 
 class Block {
-    /**
-     * @var BlockIdentifier
-     */
-    private $block;
-    /**
-     * @var GoalIdentifier
-     */
-    private $goal;
     /**
      * @var float
      */
@@ -18,12 +9,10 @@ class Block {
 
     /**
      * @param BlockIdentifier $block
-     * @param GoalIdentifier $goal
      * @param float $units
      */
-    public function __construct(BlockIdentifier $block, GoalIdentifier $goal, $units) {
+    public function __construct(BlockIdentifier $block, $units) {
         $this->block = $block;
-        $this->goal = $goal;
         $this->units = $units;
     }
 
@@ -32,13 +21,6 @@ class Block {
      */
     public function getBlock() {
         return $this->block;
-    }
-
-    /**
-     * @return GoalIdentifier
-     */
-    public function getGoal() {
-        return $this->goal;
     }
 
     /**

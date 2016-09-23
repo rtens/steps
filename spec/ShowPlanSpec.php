@@ -23,9 +23,7 @@ class ShowPlanSpec extends Specification {
         $this->then->returnShouldMatch(function (Plan $plan) {
             return $plan->getBlocks() == [
                 new Block(
-                    new BlockIdentifier('fooBlock'),
-                    new GoalIdentifier('foo'),
-                    1
+                    new BlockIdentifier('fooBlock'), 1
                 )
             ];
         });

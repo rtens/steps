@@ -1,5 +1,6 @@
 <?php namespace rtens\steps\app;
 
+use rtens\domin\delivery\web\renderers\link\types\ClassLink;
 use rtens\domin\delivery\web\WebApplication;
 use rtens\domin\reflection\GenericObjectAction;
 use rtens\steps\model\Identifier;
@@ -7,6 +8,8 @@ use rtens\steps\model\Time;
 use watoki\karma\implementations\commandQuery\CommandQueryApplication;
 use watoki\karma\implementations\commandQuery\Query;
 use watoki\karma\stores\EventStore;
+use watoki\reflect\PropertyReader;
+use watoki\reflect\type\ClassType;
 
 class Application extends CommandQueryApplication {
 
@@ -26,22 +29,35 @@ class Application extends CommandQueryApplication {
     }
 
     private function registerActions(WebApplication $curir) {
-        foreach ($this->findActionsIn(__DIR__ . '/../*.php') as $class) {
-            $curir->actions->add($this->makeActionId($class),
+        $linkedActions = [];
+
+        foreach ($this->findClassesIn(__DIR__ . '/..') as $class) {
+            $id = $this->makeActionId($class);
+
+            $curir->actions->add($id,
                 $this->makeAction($curir, $class)->generic()
                     ->setModifying(!is_subclass_of($class, Query::class)));
+
+            $reader = new PropertyReader($curir->types, $class);
+            foreach ($reader->readInterface() as $property) {
+                $type = $property->type();
+                if ($type instanceof ClassType && is_subclass_of($type->getClass(), Identifier::class)) {
+                    $linkedActions[$type->getClass()][] = $id;
+                }
+            }
         }
+
+        $this->linkActions($curir, $linkedActions);
     }
 
-    private function findActionsIn($folder) {
+    private function findClassesIn($folder) {
         $before = get_declared_classes();
 
-        foreach (glob($folder) as $file) {
+        foreach (glob($folder . '/*.php') as $file) {
             include_once($file);
         }
 
-        $newClasses = array_diff(get_declared_classes(), $before);
-        return $newClasses;
+        return array_diff(get_declared_classes(), $before);
     }
 
     private function makeActionId($class) {
@@ -50,5 +66,21 @@ class Application extends CommandQueryApplication {
 
     private function makeAction(WebApplication $curir, $class) {
         return (new GenericObjectAction($class, $curir->types, $curir->parser, [$this, 'handle']));
+    }
+
+    private function linkActions(WebApplication $curir, $linkedActions) {
+        foreach ($this->findClassesIn(__DIR__ . '/../projecting') as $projection) {
+            $reader = new PropertyReader($curir->types, $projection);
+            foreach ($reader->readInterface() as $property) {
+                $type = $property->type();
+                if ($type instanceof ClassType && array_key_exists($type->getClass(), $linkedActions)) {
+                    foreach ($linkedActions[$type->getClass()] as $actionId) {
+                        $curir->links->add(new ClassLink($projection, $actionId, function ($object) use ($property) {
+                            return [$property->name() => ['key' => $property->get($object)]];
+                        }));
+                    }
+                }
+            }
+        }
     }
 }

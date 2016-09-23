@@ -31,9 +31,7 @@ class Plan {
         }
 
         $this->blocks[(string)$e->getBlock()] = new Block(
-            $e->getBlock(),
-            $e->getGoal(),
-            $e->getUnits()
+            $e->getBlock(), $e->getUnits()
         );
     }
 
