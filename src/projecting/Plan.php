@@ -1,6 +1,7 @@
 <?php namespace rtens\steps\projecting;
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
+use rtens\steps\model\Time;
 
 class Plan {
     /**
@@ -25,6 +26,10 @@ class Plan {
     }
 
     public function applyBlockPlanned(BlockPlanned $e) {
+        if (!$this->wasPlannedToday($e)) {
+            return;
+        }
+
         $this->blocks[(string)$e->getBlock()] = new Block(
             $e->getBlock(),
             $e->getGoal(),
@@ -34,5 +39,9 @@ class Plan {
 
     public function applyBlockFinished(BlockFinished $e) {
         unset($this->blocks[(string)$e->getBlock()]);
+    }
+
+    private function wasPlannedToday(BlockPlanned $e) {
+        return $e->getWhen()->setTime(0, 0) == Time::at('today');
     }
 }

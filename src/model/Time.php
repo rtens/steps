@@ -11,4 +11,8 @@ class Time {
     public static function now() {
         return self::$frozen ?: new \DateTime();
     }
+
+    public static function at($timeString) {
+        return new \DateTime('@' . strtotime($timeString, self::now()->getTimestamp()));
+    }
 }

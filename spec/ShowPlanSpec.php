@@ -53,4 +53,14 @@ class ShowPlanSpec extends Specification {
             return $plan->getUnits() == 1.3;
         });
     }
+
+    public function discardYesterday() {
+        $this->given(new BlockPlanned(new BlockIdentifier('old'), new GoalIdentifier('foo'), 1, Time::at('yesterday')));
+        $this->given(new BlockPlanned(new BlockIdentifier('new'), new GoalIdentifier('foo'), 1, Time::now()));
+        $this->when(new ShowPlan());
+
+        $this->then->returnShouldMatch(function (Plan $plan) {
+            return $plan->getBlocks()[0]->getBlock() == new BlockIdentifier('new');
+        });
+    }
 }
