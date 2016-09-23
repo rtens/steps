@@ -1,11 +1,14 @@
 <?php namespace rtens\steps\projecting;
+
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
+use rtens\steps\events\BlockStarted;
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
 use rtens\steps\model\BlockIdentifier;
 use rtens\steps\model\GoalIdentifier;
+use rtens\steps\model\Steps;
 use rtens\steps\model\Time;
 
 class Block {
@@ -25,6 +28,10 @@ class Block {
      * @var \DateTime
      */
     private $planned;
+    /**
+     * @var null|\DateTime
+     */
+    private $started;
     /**
      * @var null|\DateTime
      */
@@ -75,10 +82,28 @@ class Block {
     }
 
     /**
+     * @return \DateTime|null
+     */
+    public function getStarted() {
+        return $this->started;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getFinished() {
+        return $this->finished;
+    }
+
+    /**
      * @return bool
      */
-    public function isFinished() {
+    public function getIsFinished() {
         return !!$this->finished;
+    }
+
+    public function getSpentUnits() {
+        return ($this->finished->getTimestamp() - $this->started->getTimestamp()) / Steps::UNIT_SECONDS;
     }
 
     /**
@@ -101,6 +126,13 @@ class Block {
             return;
         }
         $this->finished = $e->getWhen();
+    }
+
+    public function applyBlockStarted(BlockStarted $e) {
+        if ($this->block != $e->getBlock()) {
+            return;
+        }
+        $this->started = $e->getWhen();
     }
 
     public function applyGoalCreated(GoalCreated $e) {

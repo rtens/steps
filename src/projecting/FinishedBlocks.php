@@ -1,38 +1,19 @@
 <?php namespace rtens\steps\projecting;
-use rtens\steps\events\BlockFinished;
-use rtens\steps\events\BlockStarted;
 
-class FinishedBlocks {
-    /**
-     * @var FinishedBlock[]
-     */
-    private $blocks = [];
-    /**
-     * @var BlockStarted|null
-     */
-    private $current;
+class FinishedBlocks extends BlockList {
 
     /**
-     * @return float
-     */
-    public function getUnits() {
-        return array_sum(array_map(function (FinishedBlock $block) {
-            return $block->getUnits();
-        }, $this->blocks));
-    }
-
-    /**
-     * @return FinishedBlock[]
+     * @return Block[]
      */
     public function getBlocks() {
-        return $this->blocks;
+        return array_values(array_filter(parent::getBlocks(), function (Block $block) {
+            return $block->getIsFinished();
+        }));
     }
 
-    public function applyBlockStarted(BlockStarted $e) {
-        $this->current = $e;
-    }
-
-    public function applyBlockFinished(BlockFinished $e) {
-        $this->blocks[] = new FinishedBlock($e->getBlock(), $this->current->getWhen(), $e->getWhen());
+    public function getSpentUnits() {
+        return array_sum(array_map(function (Block $block) {
+            return $block->getSpentUnits();
+        }, $this->getBlocks()));
     }
 }

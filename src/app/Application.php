@@ -30,6 +30,7 @@ class Application extends CommandQueryApplication {
         $this->registerActions($curir);
         $curir->renderers->add(new GoalListRenderer($curir->renderers, $curir->types));
         $curir->renderers->add(new PlanRenderer($curir->renderers, $curir->types));
+        $curir->renderers->add(new FinishedBlocksRenderer($curir->renderers, $curir->types));
 
         $curir->menu->add(new ActionMenuItem('Goals', 'listGoals'));
         $curir->menu->add(new ActionMenuItem('Plan', 'showPlan'));
