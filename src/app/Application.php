@@ -34,7 +34,7 @@ class Application extends CommandQueryApplication {
 
         $curir->menu->add(new ActionMenuItem('Goals', 'listGoals'));
         $curir->menu->add(new ActionMenuItem('Plan', 'showPlan'));
-        $curir->menu->add(new ActionMenuItem('Current', 'showCurrentBlock'));
+        $curir->menu->add(new ActionMenuItem('Current', 'showCurrentBlocks'));
         $curir->menu->add(new ActionMenuItem('Finished', 'showFinishedBlocks'));
     }
 
