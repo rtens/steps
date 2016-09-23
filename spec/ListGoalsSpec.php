@@ -15,6 +15,7 @@ use rtens\steps\model\StepIdentifier;
 use rtens\steps\model\Time;
 use rtens\steps\projecting\Goal;
 use rtens\steps\projecting\GoalList;
+use rtens\steps\projecting\Step;
 use watoki\karma\testing\Specification;
 
 class ListGoalsSpec extends Specification {
@@ -38,10 +39,8 @@ class ListGoalsSpec extends Specification {
         $this->given(new StepAdded(new StepIdentifier('foo_one'), new GoalIdentifier('foo'), 'one'));
         $this->when(new ListGoals());
         $this->then->returnShouldMatch(function (GoalList $list) {
-            return $list->getGoals() == [
-                new Goal(new GoalIdentifier('foo'), 'Foo', [
-                    new StepIdentifier('foo_one')
-                ])
+            return $list->getGoals()[0]->getSteps() == [
+                new Step(new StepIdentifier('foo_one'), 'one')
             ];
         });
     }
@@ -54,10 +53,8 @@ class ListGoalsSpec extends Specification {
         $this->when(new ListGoals());
 
         $this->then->returnShouldMatch(function (GoalList $list) {
-            return $list->getGoals() == [
-                new Goal(new GoalIdentifier('foo'), 'Foo', [
-                    new StepIdentifier('foo_two')
-                ])
+            return $list->getGoals()[0]->getSteps() == [
+                new Step(new StepIdentifier('foo_two'), 'two')
             ];
         });
     }

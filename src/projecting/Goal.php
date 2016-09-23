@@ -14,7 +14,7 @@ class Goal {
      */
     private $name;
     /**
-     * @var StepIdentifier[]
+     * @var Step[]
      */
     private $steps;
     /**
@@ -28,36 +28,41 @@ class Goal {
     /**
      * @param GoalIdentifier $goal
      * @param string $name
-     * @param StepIdentifier[] $steps
      */
-    public function __construct(GoalIdentifier $goal, $name, $steps = []) {
+    public function __construct(GoalIdentifier $goal, $name) {
         $this->name = $name;
         $this->goal = $goal;
-        $this->steps = $steps;
     }
 
     /**
-     * @return StepIdentifier[]
+     * @return Step[]
      */
     public function getSteps() {
-        return $this->steps;
+        return array_values($this->steps);
     }
 
     /**
-     * @return null|StepIdentifier
+     * @return null|string
      */
     public function getNextStep() {
         if (!$this->steps) {
             return null;
         }
-        return $this->steps[0];
+        return $this->getSteps()[0]->getDescription();
+    }
+
+    /**
+     * @param Step $step
+     */
+    public function addStep(Step $step) {
+        $this->steps[(string)$step->getStep()] = $step;
     }
 
     /**
      * @param StepIdentifier $step
      */
-    public function addStep(StepIdentifier $step) {
-        $this->steps[] = $step;
+    public function removeStep(StepIdentifier $step) {
+        unset($this->steps[(string)$step]);
     }
 
     /**
@@ -72,13 +77,6 @@ class Goal {
      */
     public function getName() {
         return $this->name;
-    }
-
-    /**
-     * @param StepIdentifier $step
-     */
-    public function removeStep(StepIdentifier $step) {
-        $this->steps = array_values(array_diff($this->steps, [$step]));
     }
 
     /**
