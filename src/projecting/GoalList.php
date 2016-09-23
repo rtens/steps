@@ -7,6 +7,7 @@ use rtens\steps\events\GoalRated;
 use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
+use rtens\steps\events\StepsSorted;
 
 class GoalList {
     /**
@@ -55,6 +56,10 @@ class GoalList {
     }
 
     public function applyDeadlineSet(DeadlineSet $e) {
+        $this->apply(__FUNCTION__, $e);
+    }
+
+    public function applyStepsSorted(StepsSorted $e) {
         $this->apply(__FUNCTION__, $e);
     }
 }

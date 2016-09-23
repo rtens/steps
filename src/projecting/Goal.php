@@ -8,7 +8,9 @@ use rtens\steps\events\GoalRated;
 use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
+use rtens\steps\events\StepsSorted;
 use rtens\steps\model\GoalIdentifier;
+use rtens\steps\model\StepIdentifier;
 
 class Goal {
     /**
@@ -22,7 +24,7 @@ class Goal {
     /**
      * @var Step[]
      */
-    private $steps;
+    private $steps = [];
     /**
      * @var Html[]
      */
@@ -43,6 +45,10 @@ class Goal {
      * @var null|\DateTime
      */
     private $achieved;
+    /**
+     * @var StepIdentifier[]
+     */
+    private $sorted = [];
 
     /**
      * @param GoalIdentifier $goal
@@ -86,9 +92,28 @@ class Goal {
      * @return Step[]
      */
     public function getSteps() {
-        return array_values(array_filter($this->steps, function (Step $step) {
+        $filtered = array_values(array_filter($this->steps, function (Step $step) {
             return !$step->isCompleted();
         }));
+        $original = array_values(array_map(function (Step $step) {
+            return $step->getStep();
+        }, $filtered));
+
+        if ($this->sorted) {
+            usort($filtered, function (Step $a, Step $b) use ($original) {
+                if (in_array($a->getStep(), $this->sorted) && !in_array($b->getStep(), $this->sorted)) {
+                    return -1;
+                } else if (!in_array($a->getStep(), $this->sorted) && in_array($b->getStep(), $this->sorted)) {
+                    return 1;
+                } else if (in_array($a->getStep(), $this->sorted) && in_array($b->getStep(), $this->sorted)) {
+                    return array_search($a->getStep(), $this->sorted) - array_search($b->getStep(), $this->sorted);
+                } else {
+                    return array_search($a->getStep(), $original) - array_search($b->getStep(), $original);
+                }
+            });
+        }
+
+        return array_values($filtered);
     }
 
     /**
@@ -176,5 +201,12 @@ class Goal {
             return;
         }
         $this->deadline = $e->getDeadline();
+    }
+
+    public function applyStepsSorted(StepsSorted $e) {
+        if (!$this->goal == $e->getGoal()) {
+            return;
+        }
+        $this->sorted = $e->getSteps();
     }
 }

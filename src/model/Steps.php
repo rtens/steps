@@ -18,11 +18,13 @@ use rtens\steps\events\NoteAdded;
 use rtens\steps\events\PlanSorted;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
+use rtens\steps\events\StepsSorted;
 use rtens\steps\FinishBlock;
 use rtens\steps\PlanBlock;
 use rtens\steps\RateGoal;
 use rtens\steps\SetDeadline;
 use rtens\steps\SortPlan;
+use rtens\steps\SortSteps;
 use rtens\steps\StartBlock;
 
 class Steps {
@@ -143,5 +145,9 @@ class Steps {
 
     public function handleSortPlan(SortPlan $c) {
         return new PlanSorted($c->getBlocks(), Time::now());
+    }
+
+    public function handleSortSteps(SortSteps $c) {
+        return new StepsSorted($c->getGoal(), $c->getSteps(), Time::now());
     }
 }

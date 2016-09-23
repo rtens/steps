@@ -38,7 +38,7 @@ class SortPlanSpec extends Specification {
         $this->given(new BlockPlanned(new BlockIdentifier('foo'), new GoalIdentifier('goal'), 1, Time::now()));
         $this->given(new BlockPlanned(new BlockIdentifier('bar'), new GoalIdentifier('goal'), 1, Time::now()));
         $this->given(new BlockPlanned(new BlockIdentifier('baz'), new GoalIdentifier('goal'), 1, Time::now()));
-        $this->when(new SortPlan([new BlockIdentifier('bar')]));
+        $this->given(new PlanSorted([new BlockIdentifier('bar')], Time::now()));
         $this->when(new ShowPlan());
         $this->then->returnShouldMatch(function (Plan $plan) {
             return $plan->getBlocks()[0]->getBlock() == new BlockIdentifier('bar');
