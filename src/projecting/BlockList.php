@@ -1,4 +1,5 @@
 <?php namespace rtens\steps\projecting;
+use rtens\steps\events\BlockCancelled;
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\BlockStarted;
@@ -45,6 +46,10 @@ class BlockList {
         $this->apply($this->blocks, __FUNCTION__, $e);
     }
 
+    public function applyBlockCancelled(BlockCancelled $e) {
+        $this->apply($this->blocks, __FUNCTION__, $e);
+    }
+
     private function apply($to, $function, $event) {
         foreach ($to as $target) {
             call_user_func([$target, $function], $event);
@@ -63,5 +68,4 @@ class BlockList {
     public function applyStepCompleted(StepCompleted $e) {
         $this->apply($this->goals, __FUNCTION__, $e);
     }
-
 }

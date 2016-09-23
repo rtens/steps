@@ -1,5 +1,6 @@
 <?php namespace rtens\steps\projecting;
 
+use rtens\steps\events\BlockCancelled;
 use rtens\steps\events\BlockFinished;
 use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\BlockStarted;
@@ -36,6 +37,10 @@ class Block {
      * @var null|\DateTime
      */
     private $finished;
+    /**
+     * @var boolean
+     */
+    private $cancelled = false;
 
     /**
      * @param BlockIdentifier $block
@@ -116,6 +121,13 @@ class Block {
     /**
      * @return bool
      */
+    public function isCancelled() {
+        return $this->cancelled;
+    }
+
+    /**
+     * @return bool
+     */
     public function wasPlannedToday() {
         return $this->planned->setTime(0, 0) == Time::at('today');
     }
@@ -140,6 +152,13 @@ class Block {
             return;
         }
         $this->started = $e->getWhen();
+    }
+
+    public function applyBlockCancelled(BlockCancelled $e) {
+        if ($this->block != $e->getBlock()) {
+            return;
+        }
+        $this->cancelled = true;
     }
 
     public function applyGoalCreated(GoalCreated $e) {

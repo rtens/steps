@@ -1,6 +1,8 @@
 <?php namespace rtens\steps\model;
 
 use rtens\steps\AchieveGoal;
+use rtens\steps\CancelBlock;
+use rtens\steps\events\BlockCancelled;
 use rtens\steps\PlanBlock;
 use rtens\steps\AddNote;
 use rtens\steps\AddSteps;
@@ -34,6 +36,10 @@ class Steps {
      * @var BlockIdentifier[]
      */
     private $finishedBlocks = [];
+    /**
+     * @var BlockIdentifier[]
+     */
+    private $startedBlocks = [];
 
     public function handleCreateGoal(CreateGoal $c) {
         return new GoalCreated(GoalIdentifier::make([$c->getName()]), $c->getName(), Time::now());
@@ -75,6 +81,7 @@ class Steps {
 
     public function applyBlockStarted(BlockStarted $e) {
         $this->currentBlock = $e->getBlock();
+        $this->startedBlocks[] = $e->getBlock();
     }
 
     public function handleFinishBlock(FinishBlock $c) {
@@ -123,5 +130,12 @@ class Steps {
 
     public function handleSetDeadline(SetDeadline $c) {
         return new DeadlineSet($c->getGoal(), $c->getDeadline(), Time::now());
+    }
+
+    public function handleCancelBlock(CancelBlock $c) {
+        if (in_array($c->getBlock(), $this->startedBlocks)) {
+            throw new \Exception('Cannot cancel a block after it has been started.');
+        }
+        return new BlockCancelled($c->getBlock(), Time::now());
     }
 }

@@ -7,7 +7,7 @@ class Plan extends BlockList {
      */
     public function getBlocks() {
         return array_values(array_filter(parent::getBlocks(), function (Block $block) {
-            return !$block->getIsFinished() && $block->wasPlannedToday();
+            return !$block->isCancelled() && !$block->getIsFinished() && $block->wasPlannedToday();
         }));
     }
 }
