@@ -182,14 +182,14 @@ class Goal {
     }
 
     public function applyNoteAdded(NoteAdded $e) {
-        if (!$this->goal == $e->getGoal()) {
+        if ($this->goal != $e->getGoal()) {
             return;
         }
         $this->notes[] = $e->getNote();
     }
 
     public function applyGoalRated(GoalRated $e) {
-        if (!$this->goal == $e->getGoal()) {
+        if ($this->goal != $e->getGoal()) {
             return;
         }
         $this->importance = $e->getImportance();
@@ -197,14 +197,14 @@ class Goal {
     }
 
     public function applyDeadlineSet(DeadlineSet $e) {
-        if (!$this->goal == $e->getGoal()) {
+        if ($this->goal != $e->getGoal()) {
             return;
         }
         $this->deadline = $e->getDeadline();
     }
 
     public function applyStepsSorted(StepsSorted $e) {
-        if (!$this->goal == $e->getGoal()) {
+        if ($this->goal != $e->getGoal()) {
             return;
         }
         $this->sorted = $e->getSteps();
