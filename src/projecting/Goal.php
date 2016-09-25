@@ -238,6 +238,10 @@ class Goal {
         $this->lastActivity = $e->getWhen();
     }
 
+    public function getLastActivity() {
+        return $this->lastActivity;
+    }
+
     public function getRank() {
         $effectiveUrgency = $this->urgency;
         if ($this->deadline) {
