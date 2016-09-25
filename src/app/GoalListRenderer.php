@@ -41,6 +41,13 @@ class GoalListRenderer extends TransformingRenderer {
         $table->setHeader('urgency', 'U');
         $table->setHeader('rank', 'R');
 
+        $table->setFilter('daysLeft', function ($int) {
+            return round($int, 1);
+        });
+        $table->setFilter('rank', function ($int) {
+            return round($int, 1);
+        });
+
         return new DataTable($table);
     }
 }

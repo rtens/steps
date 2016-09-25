@@ -259,12 +259,12 @@ class Goal {
             } else if ($timeLeft < Steps::DEADLINE_ZONE_SECONDS) {
                 $proportionLeft = $timeLeft / Steps::DEADLINE_ZONE_SECONDS;
                 $deltaUrgency = Steps::MAX_URGENCY - $effectiveUrgency;
-                $effectiveUrgency += intval($proportionLeft * $deltaUrgency);
+                $effectiveUrgency += $proportionLeft * $deltaUrgency;
             }
         }
 
         $penaltySeconds = Time::now()->getTimestamp() - $this->lastActivity->getTimestamp();
-        $penalty = intval(($penaltySeconds) / (24 * 60 * 60));
+        $penalty = ($penaltySeconds) / (24 * 60 * 60);
 
         return $this->importance + 2 * $effectiveUrgency + $penalty;
     }
