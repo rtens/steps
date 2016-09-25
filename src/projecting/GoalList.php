@@ -19,9 +19,15 @@ class GoalList {
      * @return Goal[]
      */
     public function getGoals() {
-        return array_values(array_filter($this->goals, function (Goal $goal) {
+        $filtered = array_filter($this->goals, function (Goal $goal) {
             return !$goal->isAchieved();
-        }));
+        });
+
+        usort($filtered, function (Goal $a, Goal $b) {
+            return $a->getRank() - $b->getRank();
+        });
+
+        return array_values($filtered);
     }
 
     private function apply($function, $event) {

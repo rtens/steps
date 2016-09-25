@@ -1,6 +1,8 @@
 <?php namespace rtens\steps\projecting;
 
 use rtens\domin\parameters\Html;
+use rtens\steps\events\BlockFinished;
+use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\DeadlineSet;
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
@@ -9,8 +11,11 @@ use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
 use rtens\steps\events\StepsSorted;
+use rtens\steps\model\BlockIdentifier;
 use rtens\steps\model\GoalIdentifier;
 use rtens\steps\model\StepIdentifier;
+use rtens\steps\model\Steps;
+use rtens\steps\model\Time;
 
 class Goal {
     /**
@@ -49,6 +54,14 @@ class Goal {
      * @var StepIdentifier[]
      */
     private $sorted = [];
+    /**
+     * @var \DateTime
+     */
+    private $lastActivity;
+    /**
+     * @var BlockIdentifier[]
+     */
+    private $blocks = [];
 
     /**
      * @param GoalIdentifier $goal
@@ -158,6 +171,7 @@ class Goal {
             return;
         }
         $this->name = $e->getName();
+        $this->lastActivity = $e->getWhen();
     }
 
     public function applyStepAdded(StepAdded $e) {
@@ -208,5 +222,39 @@ class Goal {
             return;
         }
         $this->sorted = $e->getSteps();
+    }
+
+    public function applyBlockPlanned(BlockPlanned $e) {
+        if ($this->goal != $e->getGoal()) {
+            return;
+        }
+        $this->blocks[] = $e->getBlock();
+    }
+
+    public function applyBlockFinished(BlockFinished $e) {
+        if (!in_array($e->getBlock(), $this->blocks)) {
+            return;
+        }
+        $this->lastActivity = $e->getWhen();
+    }
+
+    public function getRank() {
+        $effectiveUrgency = $this->urgency;
+        if ($this->deadline) {
+            $timeLeft = $this->deadline->getTimestamp() - Time::now()->getTimestamp();
+
+            if ($timeLeft <= 0) {
+                $effectiveUrgency = Steps::MAX_URGENCY;
+            } else if ($timeLeft < Steps::DEADLINE_ZONE_SECONDS) {
+                $proportionLeft = $timeLeft / Steps::DEADLINE_ZONE_SECONDS;
+                $deltaUrgency = Steps::MAX_URGENCY - $effectiveUrgency;
+                $effectiveUrgency += $proportionLeft * $deltaUrgency;
+            }
+        }
+
+        $penaltySeconds = Time::now()->getTimestamp() - $this->lastActivity->getTimestamp();
+        $penalty = intval(($penaltySeconds) / (24 * 60 * 60));
+
+        return $this->importance + 2 * $effectiveUrgency + $penalty;
     }
 }

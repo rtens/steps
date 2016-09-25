@@ -36,6 +36,7 @@ class Application extends CommandQueryApplication {
         $linkPrinter = new LinkPrinter($curir->links, $curir->actions, $curir->parser, $curir->token);
         $curir->renderers->add(new CurrentBlockRenderer($curir->renderers, $linkPrinter));
 
+        $curir->menu->add(new ActionMenuItem('New', 'createGoal'));
         $curir->menu->add(new ActionMenuItem('Goals', 'listGoals'));
         $curir->menu->add(new ActionMenuItem('Plan', 'showPlan'));
         $curir->menu->add(new ActionMenuItem('Current', 'showCurrentBlock'));
