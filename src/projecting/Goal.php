@@ -242,6 +242,13 @@ class Goal {
         return $this->lastActivity;
     }
 
+    public function getDaysLeft() {
+        if (!$this->deadline) {
+            return null;
+        }
+        return ($this->deadline->getTimestamp() - Time::now()->getTimestamp()) / (24 * 3600);
+    }
+
     public function getRank() {
         $effectiveUrgency = $this->urgency;
         if ($this->deadline) {
