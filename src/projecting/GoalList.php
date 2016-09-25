@@ -1,5 +1,7 @@
 <?php namespace rtens\steps\projecting;
 
+use rtens\steps\events\BlockFinished;
+use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\DeadlineSet;
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
@@ -66,6 +68,14 @@ class GoalList {
     }
 
     public function applyStepsSorted(StepsSorted $e) {
+        $this->apply(__FUNCTION__, $e);
+    }
+
+    public function applyBlockPlanned(BlockPlanned $e) {
+        $this->apply(__FUNCTION__, $e);
+    }
+
+    public function applyBlockFinished(BlockFinished $e) {
         $this->apply(__FUNCTION__, $e);
     }
 }
