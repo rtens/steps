@@ -26,7 +26,7 @@ class GoalList {
         });
 
         usort($filtered, function (Goal $a, Goal $b) {
-            return intval($b->getRank() - $a->getRank());
+            return $a->getRank() > $b->getRank() ? -1 : 1;
         });
 
         return array_values($filtered);
