@@ -248,7 +248,7 @@ class Goal {
             } else if ($timeLeft < Steps::DEADLINE_ZONE_SECONDS) {
                 $proportionLeft = $timeLeft / Steps::DEADLINE_ZONE_SECONDS;
                 $deltaUrgency = Steps::MAX_URGENCY - $effectiveUrgency;
-                $effectiveUrgency += $proportionLeft * $deltaUrgency;
+                $effectiveUrgency += intval($proportionLeft * $deltaUrgency);
             }
         }
 

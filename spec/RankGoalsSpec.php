@@ -83,7 +83,7 @@ class RankGoalsSpec extends Specification {
     }
 
     public function deadlineWithBaseUrgency() {
-        $this->given(new DeadlineSet(new GoalIdentifier('foo'), Time::at('7 days'), Time::now()));
+        $this->given(new DeadlineSet(new GoalIdentifier('foo'), Time::at('7 days 6 hours'), Time::now()));
         $this->given(new GoalRated(new GoalIdentifier('foo'), 0, 6, Time::now()));
         $this->when(new ShowGoal(new GoalIdentifier('foo')));
         $this->then->returnShouldMatch(function (Goal $goal) {
@@ -113,9 +113,9 @@ class RankGoalsSpec extends Specification {
         $this->given(new GoalCreated(new GoalIdentifier('bar'), 'Bar', Time::now()));
         $this->given(new GoalCreated(new GoalIdentifier('baz'), 'Bar', Time::now()));
 
-        $this->given(new GoalRated(new GoalIdentifier('bar'), 0, 1, Time::now()));
+        $this->given(new GoalRated(new GoalIdentifier('bar'), 0, 3, Time::now()));
         $this->given(new GoalRated(new GoalIdentifier('baz'), 0, 2, Time::now()));
-        $this->given(new GoalRated(new GoalIdentifier('foo'), 0, 3, Time::now()));
+        $this->given(new GoalRated(new GoalIdentifier('foo'), 0, 1, Time::now()));
 
         $this->when(new ListGoals());
         $this->then->returnShouldMatch(function (GoalList $list) {
