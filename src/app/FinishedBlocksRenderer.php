@@ -38,6 +38,10 @@ class FinishedBlocksRenderer extends TransformingRenderer {
         $table->setHeader('goalName', 'Goal');
         $table->setHeader('spentUnits', 'Units (' . $blocks->getSpentUnits() . ')');
 
+        $table->setFilter('units', function ($float) {
+            return round($float, 2);
+        });
+
         return new DataTable($table);
     }
 
