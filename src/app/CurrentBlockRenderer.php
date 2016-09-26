@@ -36,10 +36,14 @@ class CurrentBlockRenderer extends TransformingRenderer {
         $nextBlock = $value->getNextBlock();
 
         if (!count($value->getBlocks()) && !$nextBlock) {
-            return new Element('a', [
-                'class' => 'btn btn-success btn-lg',
-                'href' => Url::relative('listGoals')
-            ], ['Make a plan']);
+            return [
+                new Element('h1', [], [
+                    'All done =)']),
+                new Element('a', [
+                    'class' => 'btn btn-success btn-lg',
+                    'href' => Url::relative('listGoals')
+                ], ['Make a new plan'])
+            ];
         } else if (!count($value->getBlocks())) {
             return [
                 new Element('h1', [], [
