@@ -17,4 +17,10 @@ class CurrentBlock extends Plan {
         }
         return parent::getBlocks()[0];
     }
+
+    public function getUnitsLeft() {
+        return array_sum(array_map(function (Block $block) {
+            return $block->getUnits();
+        }, parent::getBlocks()));
+    }
 }

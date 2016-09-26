@@ -59,6 +59,8 @@ class CurrentBlockRenderer extends TransformingRenderer {
             ];
         } else if (!count($value->getBlocks())) {
             return [
+                new Element('h2', [], ['Only ' . $value->getUnitsLeft() . ' units left']),
+                new Element('p', [], ['Next up:']),
                 new Element('h1', [], [
                     $nextBlock->getGoalName() .
                     ($nextBlock->getNextStep() ? ': ' . $nextBlock->getNextStep() : '')
