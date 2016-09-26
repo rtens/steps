@@ -30,13 +30,12 @@ class Application extends CommandQueryApplication {
         $curir->setNameAndBrand('steps');
         $this->registerActions($curir);
 
+        $linkPrinter = new LinkPrinter($curir->links, $curir->actions, $curir->parser, $curir->token);
         $curir->renderers->add(new GoalListRenderer($curir->renderers, $curir->types));
+        $curir->renderers->add(new CurrentBlockRenderer($curir->renderers, $linkPrinter));
         $curir->renderers->add(new PlanRenderer($curir->renderers, $curir->types));
         $curir->renderers->add(new FinishedBlocksRenderer($curir->renderers, $curir->types));
         $curir->renderers->add(new StepsRenderer($curir->renderers, $curir->types));
-
-        $linkPrinter = new LinkPrinter($curir->links, $curir->actions, $curir->parser, $curir->token);
-        $curir->renderers->add(new CurrentBlockRenderer($curir->renderers, $linkPrinter));
 
         $curir->menu->add(new ActionMenuItem('New', 'createGoal'));
         $curir->menu->add(new ActionMenuItem('Goals', 'listGoals'));

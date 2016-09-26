@@ -33,18 +33,31 @@ class CurrentBlockRenderer extends TransformingRenderer {
      * @return mixed
      */
     protected function transform($value) {
-        if (!count($value->getBlocks())) {
+        $nextBlock = $value->getNextBlock();
+
+        if (!count($value->getBlocks()) && !$nextBlock) {
             return new Element('a', [
                 'class' => 'btn btn-success btn-lg',
-                'href' => Url::relative('startNextBlock')
-            ], ['Start next Block']);
+                'href' => Url::relative('listGoals')
+            ], ['Make a plan']);
+        } else if (!count($value->getBlocks())) {
+            return [
+                new Element('h1', [], [
+                    $nextBlock->getGoalName() .
+                    ($nextBlock->getNextStep() ? ': ' . $nextBlock->getNextStep() : '')
+                ]),
+                new Element('a', [
+                    'class' => 'btn btn-success btn-lg',
+                    'href' => Url::relative('startNextBlock')
+                ], ['Start ' . $nextBlock->getUnits() . ' unit'])
+            ];
         }
         $block = $value->getBlocks()[0];
 
         $elements = [
             new Element('div', ['class' => 'pull-right'], $this->links->createDropDown($block, 'Actions')),
             new Element('h1', [], [
-                $block->getGoalName(),
+                $block->getGoalName() .
                 ($block->getNextStep() ? ': ' . $block->getNextStep() : '')
             ]),
             $block->getUnits() . ' unit' . ($block->getUnits() == 1 ? '' : 's') . ', ' .
