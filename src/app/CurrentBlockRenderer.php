@@ -37,12 +37,11 @@ class CurrentBlockRenderer extends TransformingRenderer {
 
         if (!count($value->getBlocks()) && !$nextBlock) {
             return [
-                new Element('h1', [], [
-                    'All done =)']),
+                new Element('img', ['src' => 'https://cdn.meme.am/instances/28566014.jpg'], []),
                 new Element('a', [
                     'class' => 'btn btn-success btn-lg',
                     'href' => Url::relative('listGoals')
-                ], ['Make a new plan'])
+                ], ['Plan more'])
             ];
         } else if (!count($value->getBlocks())) {
             return [
