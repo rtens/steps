@@ -166,6 +166,13 @@ class Goal {
         return !!$this->achieved;
     }
 
+    /**
+     * @return \DateTime|null
+     */
+    public function getAchievedAt() {
+        return $this->achieved;
+    }
+
     public function applyGoalCreated(GoalCreated $e) {
         if ($this->goal != $e->getGoal()) {
             return;

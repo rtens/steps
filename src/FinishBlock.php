@@ -13,13 +13,19 @@ class FinishBlock implements Command {
      * @var \DateTime
      */
     private $when;
+    /**
+     * @var bool
+     */
+    private $goalAchieved;
 
     /**
      * @param BlockIdentifier $block
+     * @param bool $goalAchieved
      * @param \DateTime|null $when
      */
-    public function __construct(BlockIdentifier $block, \DateTime $when = null) {
+    public function __construct(BlockIdentifier $block, $goalAchieved = false, \DateTime $when = null) {
         $this->block = $block;
+        $this->goalAchieved = $goalAchieved;
         $this->when = $when ?: Time::now();
     }
 
@@ -49,5 +55,12 @@ class FinishBlock implements Command {
      */
     public function getAggregateRoot() {
         return new Steps();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isGoalAchieved() {
+        return $this->goalAchieved;
     }
 }

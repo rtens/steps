@@ -48,6 +48,10 @@ class Steps {
      * @var BlockIdentifier[]
      */
     private $startedBlocks = [];
+    /**
+     * @var GoalIdentifier[] indexed by BlockIdentifier
+     */
+    private $goalOfBlocks = [];
 
     public function handleCreateGoal(CreateGoal $c) {
         return new GoalCreated(GoalIdentifier::make([$c->getName()]), $c->getName(), Time::now());
@@ -66,14 +70,20 @@ class Steps {
             $unitsLeft -= $units;
             $count++;
 
+            $identifier = BlockIdentifier::make([$c->getGoal(), Time::now()->format('Ymd'), $count]);
             $blocks[] = new BlockPlanned(
-                BlockIdentifier::make([$c->getGoal(), Time::now()->format('Ymd'), $count]),
+                $identifier,
                 $c->getGoal(),
                 $units,
                 Time::now());
-        }
+         }
 
         return $blocks;
+    }
+
+    public function applyBlockPlanned(BlockPlanned $e){
+        $this->goalOfBlocks[(string)$e->getBlock()] = $e->getGoal();
+
     }
 
     public function handleStartBlock(StartBlock $c) {
@@ -100,7 +110,13 @@ class Steps {
             throw new \Exception('This is not the current block.');
         }
 
-        return new BlockFinished($c->getBlock(), $c->getWhen());
+        $events = [new BlockFinished($c->getBlock(), $c->getWhen())];
+
+        if ($c->isGoalAchieved()) {
+            $events[] = new GoalAchieved($this->goalOfBlocks[(string)$c->getBlock()], $c->getWhen());
+        }
+
+        return $events;
     }
 
     public function applyBlockFinished(BlockFinished $e) {
