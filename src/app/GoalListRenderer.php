@@ -42,7 +42,7 @@ class GoalListRenderer extends TransformingRenderer {
         $table->setHeader('rank', 'R');
 
         $table->setFilter('daysLeft', function ($int) {
-            return round($int, 1);
+            return is_null($int) ? null : round($int, 1);
         });
         $table->setFilter('rank', function ($int) {
             return round($int, 1);
