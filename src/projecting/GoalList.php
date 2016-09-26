@@ -10,19 +10,25 @@ use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
 use rtens\steps\events\StepsSorted;
+use rtens\steps\model\GoalIdentifier;
+use rtens\steps\model\Time;
 
 class GoalList {
     /**
      * @var Goal[]
      */
     private $goals = [];
+    /**
+     * @var GoalIdentifier[]
+     */
+    private $plan = [];
 
     /**
      * @return Goal[]
      */
     public function getGoals() {
         $filtered = array_filter($this->goals, function (Goal $goal) {
-            return !$goal->isAchieved();
+            return !$goal->isAchieved() && !in_array($goal->getGoal(), $this->plan);
         });
 
         usort($filtered, function (Goal $a, Goal $b) {
@@ -72,6 +78,9 @@ class GoalList {
     }
 
     public function applyBlockPlanned(BlockPlanned $e) {
+        if ($e->getWhen()->setTime(0, 0) == Time::at('today')) {
+            $this->plan[] = $e->getGoal();
+        }
         $this->apply(__FUNCTION__, $e);
     }
 

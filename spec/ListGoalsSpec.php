@@ -2,6 +2,7 @@
 
 use rtens\domin\parameters\Html;
 use rtens\steps\app\Application;
+use rtens\steps\events\BlockPlanned;
 use rtens\steps\events\DeadlineSet;
 use rtens\steps\events\GoalAchieved;
 use rtens\steps\events\GoalCreated;
@@ -10,6 +11,7 @@ use rtens\steps\events\NoteAdded;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
 use rtens\steps\ListGoals;
+use rtens\steps\model\BlockIdentifier;
 use rtens\steps\model\GoalIdentifier;
 use rtens\steps\model\StepIdentifier;
 use rtens\steps\model\Time;
@@ -99,6 +101,24 @@ class ListGoalsSpec extends Specification {
         $this->when(new ListGoals());
         $this->then->returnShouldMatch(function (GoalList $list) {
             return $list->getGoals()[0]->getDeadline() == new \DateTime('2011-12-13');
+        });
+    }
+
+    public function hideGoalsWithPlannedBlocks() {
+        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
+        $this->given(new GoalCreated(new GoalIdentifier('bar'), 'Bar', Time::now()));
+        $this->given(new GoalCreated(new GoalIdentifier('baz'), 'Baz', Time::now()));
+
+        $this->given(new BlockPlanned(new BlockIdentifier('one'), new GoalIdentifier('foo'), 1, Time::now()));
+        $this->given(new BlockPlanned(new BlockIdentifier('two'), new GoalIdentifier('bar'), 1, Time::at('yesterday')));
+
+        $this->when(new ListGoals());
+        $this->then->returnShouldMatch(function (GoalList $list) {
+            $goals = $list->getGoals();
+            return
+                count($goals) == 2
+                && $goals[0]->getGoal() == new GoalIdentifier('bar')
+                && $goals[1]->getGoal() == new GoalIdentifier('baz');
         });
     }
 }
