@@ -1,6 +1,8 @@
 <?php namespace rtens\steps;
+use rtens\steps\app\Application;
 use rtens\steps\model\GoalIdentifier;
 use rtens\steps\model\Steps;
+use rtens\steps\projecting\Goal;
 use watoki\karma\implementations\commandQuery\Command;
 
 class RateGoal implements Command {
@@ -9,18 +11,18 @@ class RateGoal implements Command {
      */
     private $goal;
     /**
-     * @var float
+     * @var int
      */
     private $importance;
     /**
-     * @var float
+     * @var int
      */
     private $urgency;
 
     /**
      * @param GoalIdentifier $goal
-     * @param float $importance
-     * @param float $urgency
+     * @param [0;10] $importance
+     * @param [0;10] $urgency
      */
     public function __construct(GoalIdentifier $goal, $importance, $urgency) {
         $this->goal = $goal;
@@ -36,14 +38,14 @@ class RateGoal implements Command {
     }
 
     /**
-     * @return float
+     * @return [0;10]
      */
     public function getImportance() {
         return $this->importance;
     }
 
     /**
-     * @return float
+     * @return [0;10]
      */
     public function getUrgency() {
         return $this->urgency;
@@ -61,5 +63,15 @@ class RateGoal implements Command {
      */
     public function getAggregateRoot() {
         return new Steps();
+    }
+
+    static public function fill(Application $app, $parameters) {
+        if ($parameters['goal']) {
+            /** @var Goal $goal */
+            $goal = $app->handle(new ShowGoal($parameters['goal']));
+            $parameters['importance'] = $goal->getImportance();
+            $parameters['urgency'] = $goal->getUrgency();
+        }
+        return $parameters;
     }
 }
