@@ -34,7 +34,7 @@ class GoalListRenderer extends TransformingRenderer {
      */
     protected function transform($list) {
         $table = new ObjectTable($list->getGoals(), $this->types);
-        $table->selectProperties(['name', 'stepCount', 'nextStep', 'daysLeft', 'importance', 'urgency', 'rank']);
+        $table->selectProperties(['name', 'nextStep', 'stepCount', 'daysLeft', 'importance', 'urgency', 'rank']);
         $table->setHeader('stepCount', 'Steps');
         $table->setHeader('daysLeft', 'Left');
         $table->setHeader('importance', 'I');
