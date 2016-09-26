@@ -8,18 +8,28 @@ class ListGoals implements Query {
      * @var boolean
      */
     private $showPlanned;
+    /**
+     * @var null|bool
+     */
+    private $filterAchieved;
 
     /**
      * @param bool $showPlanned
+     * @param null|bool $filterAchieved
      */
-    public function __construct($showPlanned = false) {
+    public function __construct($showPlanned = false, $filterAchieved = true) {
         $this->showPlanned = $showPlanned;
+        $this->filterAchieved = $filterAchieved;
     }
 
     /**
      * @return object
      */
     public function getProjection() {
-        return new GoalList($this->showPlanned);
+        $goalList = new GoalList($this->showPlanned);
+        if (!is_null($this->filterAchieved)) {
+            $goalList->filterAchieved(!$this->filterAchieved);
+        }
+        return $goalList;
     }
 }

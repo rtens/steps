@@ -26,6 +26,10 @@ class GoalList {
      * @var boolean
      */
     private $showPlanned;
+    /**
+     * @var null|bool
+     */
+    private $filterAchieved;
 
     /**
      * @param bool $showPlanned
@@ -34,13 +38,18 @@ class GoalList {
         $this->showPlanned = $showPlanned;
     }
 
+    public function filterAchieved($showAchieved) {
+        $this->filterAchieved = !$showAchieved;
+    }
+
     /**
      * @return Goal[]
      */
     public function getGoals() {
         $filtered = array_filter($this->goals, function (Goal $goal) {
             return
-                !$goal->isAchieved()
+                (!$this->filterAchieved || !$goal->isAchieved())
+                && ($this->filterAchieved || is_null($this->filterAchieved) || $goal->isAchieved())
                 && ($this->showPlanned || !in_array($goal->getGoal(), $this->plan));
         });
 

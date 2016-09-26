@@ -122,13 +122,35 @@ class ListGoalsSpec extends Specification {
         });
     }
 
-    public function showplannedGoal() {
+    public function showPlannedGoal() {
         $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
         $this->given(new BlockPlanned(new BlockIdentifier('one'), new GoalIdentifier('foo'), 1, Time::now()));
 
         $this->when(new ListGoals(true));
         $this->then->returnShouldMatch(function (GoalList $list) {
             return count($list->getGoals()) == 1;
+        });
+    }
+
+    public function showAchievedGoals() {
+        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
+        $this->given(new GoalCreated(new GoalIdentifier('bar'), 'Bar', Time::now()));
+        $this->given(new GoalAchieved(new GoalIdentifier('foo'), Time::now()));
+
+        $this->when(new ListGoals(false, false));
+        $this->then->returnShouldMatch(function (GoalList $list) {
+            return count($list->getGoals()) == 1 && $list->getGoals()[0]->getGoal() == new GoalIdentifier('foo');
+        });
+    }
+
+    public function showAchievedAndOpenGoals() {
+        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
+        $this->given(new GoalCreated(new GoalIdentifier('bar'), 'Bar', Time::now()));
+        $this->given(new GoalAchieved(new GoalIdentifier('foo'), Time::now()));
+
+        $this->when(new ListGoals(false, null));
+        $this->then->returnShouldMatch(function (GoalList $list) {
+            return count($list->getGoals()) == 2;
         });
     }
 }
