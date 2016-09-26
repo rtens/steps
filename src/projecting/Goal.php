@@ -250,22 +250,31 @@ class Goal {
     }
 
     public function getRank() {
-        $effectiveUrgency = $this->urgency;
-        if ($this->deadline) {
-            $timeLeft = $this->deadline->getTimestamp() - Time::now()->getTimestamp();
-
-            if ($timeLeft <= 0) {
-                $effectiveUrgency = Steps::MAX_URGENCY;
-            } else if ($timeLeft < Steps::DEADLINE_ZONE_SECONDS) {
-                $proportionLeft = $timeLeft / Steps::DEADLINE_ZONE_SECONDS;
-                $deltaUrgency = Steps::MAX_URGENCY - $effectiveUrgency;
-                $effectiveUrgency += $proportionLeft * $deltaUrgency;
-            }
-        }
+        $effectiveUrgency = $this->calculateEffectiveUrgency();
 
         $penaltySeconds = Time::now()->getTimestamp() - $this->lastActivity->getTimestamp();
         $penalty = ($penaltySeconds) / (24 * 60 * 60);
 
         return $this->importance + 2 * $effectiveUrgency + $penalty;
+    }
+
+    private function calculateEffectiveUrgency() {
+        if (!$this->deadline) {
+            return $this->urgency;
+        }
+
+        $effectiveUrgency = $this->urgency;
+        $timeLeft = $this->deadline->getTimestamp() - Time::now()->getTimestamp();
+
+        if ($timeLeft <= 0) {
+            $effectiveUrgency = Steps::MAX_URGENCY;
+            return $effectiveUrgency;
+        } else if ($timeLeft < Steps::DEADLINE_ZONE_SECONDS) {
+            $proportionLeft = (Steps::DEADLINE_ZONE_SECONDS - $timeLeft) / Steps::DEADLINE_ZONE_SECONDS;
+            $deltaUrgency = Steps::MAX_URGENCY - $effectiveUrgency;
+            $effectiveUrgency += $proportionLeft * $deltaUrgency;
+            return $effectiveUrgency;
+        }
+        return $effectiveUrgency;
     }
 }

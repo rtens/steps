@@ -83,8 +83,8 @@ class RankGoalsSpec extends Specification {
     }
 
     public function deadlineWithBaseUrgency() {
-        $this->given(new DeadlineSet(new GoalIdentifier('foo'), Time::at('15 days'), Time::now()));
-        $this->given(new GoalRated(new GoalIdentifier('foo'), 0, 6, Time::now()));
+        $this->given(new DeadlineSet(new GoalIdentifier('foo'), Time::at('10 days'), Time::now()));
+        $this->given(new GoalRated(new GoalIdentifier('foo'), 0, 4, Time::now()));
         $this->when(new ShowGoal(new GoalIdentifier('foo')));
         $this->then->returnShouldMatch(function (Goal $goal) {
             return $goal->getRank() == 16;
