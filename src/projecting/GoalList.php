@@ -22,13 +22,26 @@ class GoalList {
      * @var GoalIdentifier[]
      */
     private $plan = [];
+    /**
+     * @var boolean
+     */
+    private $showPlanned;
+
+    /**
+     * @param bool $showPlanned
+     */
+    public function __construct($showPlanned) {
+        $this->showPlanned = $showPlanned;
+    }
 
     /**
      * @return Goal[]
      */
     public function getGoals() {
         $filtered = array_filter($this->goals, function (Goal $goal) {
-            return !$goal->isAchieved() && !in_array($goal->getGoal(), $this->plan);
+            return
+                !$goal->isAchieved()
+                && ($this->showPlanned || !in_array($goal->getGoal(), $this->plan));
         });
 
         usort($filtered, function (Goal $a, Goal $b) {

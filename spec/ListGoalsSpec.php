@@ -104,7 +104,7 @@ class ListGoalsSpec extends Specification {
         });
     }
 
-    public function hideGoalsWithPlannedBlocks() {
+    public function hidePlannedGoals() {
         $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
         $this->given(new GoalCreated(new GoalIdentifier('bar'), 'Bar', Time::now()));
         $this->given(new GoalCreated(new GoalIdentifier('baz'), 'Baz', Time::now()));
@@ -119,6 +119,16 @@ class ListGoalsSpec extends Specification {
                 count($goals) == 2
                 && $goals[0]->getGoal() == new GoalIdentifier('bar')
                 && $goals[1]->getGoal() == new GoalIdentifier('baz');
+        });
+    }
+
+    public function showplannedGoal() {
+        $this->given(new GoalCreated(new GoalIdentifier('foo'), 'Foo', Time::now()));
+        $this->given(new BlockPlanned(new BlockIdentifier('one'), new GoalIdentifier('foo'), 1, Time::now()));
+
+        $this->when(new ListGoals(true));
+        $this->then->returnShouldMatch(function (GoalList $list) {
+            return count($list->getGoals()) == 1;
         });
     }
 }
