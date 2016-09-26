@@ -34,7 +34,7 @@ class Steps {
     const UNIT_SECONDS = 25 * 60;
     const MAX_URGENCY = 10;
     const MAX_IMPORTANCE = 10;
-    const DEADLINE_ZONE_SECONDS = 14 * 24 * 60 * 60;
+    const DEADLINE_ZONE_SECONDS = 30 * 24 * 60 * 60;
 
     /**
      * @var null|BlockIdentifier

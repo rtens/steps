@@ -51,7 +51,7 @@ class RankGoalsSpec extends Specification {
     }
 
     public function deadlineWithoutEffect() {
-        $this->given(new DeadlineSet(new GoalIdentifier('foo'), Time::at('14 days'), Time::now()));
+        $this->given(new DeadlineSet(new GoalIdentifier('foo'), Time::at('30 days'), Time::now()));
         $this->when(new ShowGoal(new GoalIdentifier('foo')));
         $this->then->returnShouldMatch(function (Goal $goal) {
             return $goal->getRank() == 0;
@@ -59,7 +59,7 @@ class RankGoalsSpec extends Specification {
     }
 
     public function deadlineHalfwayFromZero() {
-        $this->given(new DeadlineSet(new GoalIdentifier('foo'), Time::at('7 days'), Time::now()));
+        $this->given(new DeadlineSet(new GoalIdentifier('foo'), Time::at('15 days'), Time::now()));
         $this->when(new ShowGoal(new GoalIdentifier('foo')));
         $this->then->returnShouldMatch(function (Goal $goal) {
             return $goal->getRank() == 10;
@@ -83,7 +83,7 @@ class RankGoalsSpec extends Specification {
     }
 
     public function deadlineWithBaseUrgency() {
-        $this->given(new DeadlineSet(new GoalIdentifier('foo'), Time::at('7 days'), Time::now()));
+        $this->given(new DeadlineSet(new GoalIdentifier('foo'), Time::at('15 days'), Time::now()));
         $this->given(new GoalRated(new GoalIdentifier('foo'), 0, 6, Time::now()));
         $this->when(new ShowGoal(new GoalIdentifier('foo')));
         $this->then->returnShouldMatch(function (Goal $goal) {
