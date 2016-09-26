@@ -6,6 +6,7 @@ use rtens\steps\events\BlockStarted;
 use rtens\steps\events\GoalCreated;
 use rtens\steps\events\StepAdded;
 use rtens\steps\events\StepCompleted;
+use rtens\steps\events\StepsSorted;
 
 class BlockList {
     /**
@@ -66,6 +67,10 @@ class BlockList {
     }
 
     public function applyStepCompleted(StepCompleted $e) {
+        $this->apply($this->goals, __FUNCTION__, $e);
+    }
+
+    public function applyStepsSorted(StepsSorted $e) {
         $this->apply($this->goals, __FUNCTION__, $e);
     }
 }
