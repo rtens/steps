@@ -36,10 +36,21 @@ class CurrentBlockRenderer extends TransformingRenderer {
         $nextBlock = $value->getNextBlock();
 
         if (!count($value->getBlocks()) && !$nextBlock) {
+            $images = [
+                'https://cdn.meme.am/instances/28566014.jpg',
+                'https://storage.googleapis.com/imgfave/image_cache/1268123271323901.png',
+                'http://memeshappen.com/media/created/Finally-It39s-Done-meme-27652.jpg',
+                'http://superlol.com/wp-content/uploads/2014/08/I-am-done-for-today.jpg',
+                'https://pbs.twimg.com/profile_images/3445962980/67cdf2cc491a460eac7dc9ee120da6be.jpeg',
+                'http://m.memegen.com/0oxzd7.jpg',
+                'http://s2.quickmeme.com/img/99/99cf2e8d7851a6059fbd1663def73f7fa2a45bc0ab4e7bce7fd237bda44558b7.jpg',
+                'http://cdn.quotesgram.com/small/88/45/1747575118-You-Can-Do-It-Meme-Puppy-1.jpg'
+            ];
+
             return [
                 new Element('img', [
-                    'src' => 'https://cdn.meme.am/instances/28566014.jpg',
-                    'style' => 'max-width: 100%; margin-bottom: 1em '
+                    'src' => $images[array_rand($images)],
+                    'style' => 'max-width: 100%; max-height: 20em; margin-bottom: 1em '
                 ], []),
                 new Element('a', [
                     'class' => 'btn btn-success btn-lg',
