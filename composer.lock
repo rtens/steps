@@ -57,12 +57,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtens/domin.git",
-                "reference": "e04c039143c182ea232baf21da26a9f1e310bdb1"
+                "reference": "39aa434e0483a7636ea9fe34a2e33f97cf7f5afd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtens/domin/zipball/e04c039143c182ea232baf21da26a9f1e310bdb1",
-                "reference": "e04c039143c182ea232baf21da26a9f1e310bdb1",
+                "url": "https://api.github.com/repos/rtens/domin/zipball/39aa434e0483a7636ea9fe34a2e33f97cf7f5afd",
+                "reference": "39aa434e0483a7636ea9fe34a2e33f97cf7f5afd",
                 "shasum": ""
             },
             "require": {
@@ -106,7 +106,7 @@
                 "ddd",
                 "domain model"
             ],
-            "time": "2016-05-18 09:59:34"
+            "time": "2016-09-27 09:15:08"
         },
         {
             "name": "rtens/scrut",
