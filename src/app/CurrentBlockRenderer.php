@@ -138,6 +138,19 @@ class CurrentBlockRenderer extends TransformingRenderer {
             'href' => Url::relative('finishBlock', ['block' => ['key' => $block->getBlock()]])
         ], ['Finish!']);
 
+        foreach ($block->getSteps() as $step) {
+            $elements[] = new Element('h3', ['class' => 'alert alert-info'], [
+                new Element('a', [
+                    'class' => 'btn btn-success pull-right',
+                    'onclick' => '
+                        $.post("completeStep", {step: {key: "' . $step->getStep() . '"}});
+                        $(this).fadeOut();
+                        $(this).closest("h3").toggleClass("alert-info alert-success");'
+                ], ['Complete']),
+                $step->getDescription(),
+            ]);
+        }
+
         return $elements;
     }
 

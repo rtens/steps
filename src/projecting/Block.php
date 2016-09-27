@@ -80,6 +80,13 @@ class Block {
     }
 
     /**
+     * @return Step[]
+     */
+    public function getSteps() {
+        return $this->goal->getSteps();
+    }
+
+    /**
      * @return null|string
      */
     public function getNextStep() {
