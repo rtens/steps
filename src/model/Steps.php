@@ -26,7 +26,6 @@ use rtens\steps\SetDeadline;
 use rtens\steps\SortPlan;
 use rtens\steps\SortSteps;
 use rtens\steps\StartBlock;
-use rtens\steps\StartNextBlock;
 
 class Steps {
 
@@ -169,9 +168,5 @@ class Steps {
 
     public function handleSortSteps(SortSteps $c) {
         return new StepsSorted($c->getGoal(), $c->getSteps(), Time::now());
-    }
-
-    public function handleStartNextBlock(StartNextBlock $c) {
-        return $this->handleStartBlock(new StartBlock($c->getBlock()));
     }
 }

@@ -67,7 +67,7 @@ class CurrentBlockRenderer extends TransformingRenderer {
                 ]),
                 new Element('a', [
                     'class' => 'btn btn-success btn-lg',
-                    'href' => Url::relative('startNextBlock')
+                    'href' => Url::relative('startBlock', ['block' => ['key' => $nextBlock->getBlock()]])
                 ], ['Start ' . $nextBlock->getUnits() . ' unit'])
             ];
         }
