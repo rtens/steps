@@ -68,7 +68,12 @@ class CurrentBlockRenderer extends TransformingRenderer {
                 new Element('a', [
                     'class' => 'btn btn-success btn-lg',
                     'href' => Url::relative('startBlock', ['block' => ['key' => $nextBlock->getBlock()]])
-                ], ['Start ' . $nextBlock->getUnits() . ' unit'])
+                ], ['Start ' . $nextBlock->getUnits() . ' unit']),
+                $this->snoozer(),
+                new Element('h3', ["class" => "timeUp"], [
+                    new Element('a', ['class' => 'btn btn-warning', 'onclick' => 'snooze(5)'], ['Snooze 5']),
+                    new Element('a', ['class' => 'btn btn-danger', 'onclick' => 'snooze(10)'], ['Snooze 10'])
+                ])
             ];
         }
         $block = $value->getBlocks()[0];
@@ -105,26 +110,7 @@ class CurrentBlockRenderer extends TransformingRenderer {
             ];
         } else {
             $elements[] = [
-                new Element('div', ['class' => 'countdown', 'style' => 'display: none; margin-top: 3em;']),
-                new Element('script', [], ['
-                var snooze = function(minutes) {
-                    $(".countdown").show();
-                    $(".timeUp").hide();
-
-                    var clock = $(".countdown").FlipClock(minutes * 60, {
-                        countdown: true,
-                        clockFace: "MinuteCounter",
-                        stop: function () {
-                            onStop();
-                            onStop = function () {};
-                        }
-                    });
-                    var audio = new Audio("http://soundbible.com/grab.php?id=1477&type=mp3");
-                    var onStop = function () {
-                        audio.play();
-                    };
-                };
-                ']),
+                $this->snoozer(),
                 new Element('h3', ["class" => "timeUp"], [
                     "Time's up! (" . round($block->getSpentUnits(), 1) . ' units spent)',
                     new Element('a', ['class' => 'btn btn-warning', 'onclick' => 'snooze(5)'], ['Snooze 5']),
@@ -160,6 +146,31 @@ class CurrentBlockRenderer extends TransformingRenderer {
             HeadElements::script('https://cdn.rawgit.com/objectivehtml/FlipClock/master/compiled/flipclock.min.js'),
             HeadElements::style('https://cdn.rawgit.com/objectivehtml/FlipClock/master/compiled/flipclock.css')
         ]);
+    }
+
+    private function snoozer() {
+        return [
+            new Element('div', ['class' => 'countdown', 'style' => 'display: none; margin-top: 3em;']),
+            new Element('script', [], ['
+                var snooze = function(minutes) {
+                    $(".countdown").show();
+                    $(".timeUp").hide();
+
+                    var clock = $(".countdown").FlipClock(minutes * 60, {
+                        countdown: true,
+                        clockFace: "MinuteCounter",
+                        stop: function () {
+                            onStop();
+                            onStop = function () {};
+                        }
+                    });
+                    var audio = new Audio("http://soundbible.com/grab.php?id=1477&type=mp3");
+                    var onStop = function () {
+                        audio.play();
+                    };
+                };
+            '])
+        ];
     }
 
 }
