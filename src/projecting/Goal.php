@@ -259,8 +259,12 @@ class Goal {
     public function getRank() {
         $effectiveUrgency = $this->calculateEffectiveUrgency();
 
-        $penaltySeconds = Time::now()->getTimestamp() - $this->lastActivity->getTimestamp();
-        $penalty = ($penaltySeconds) / (24 * 60 * 60);
+        if ($this->deadline) {
+            $penalty = 0;
+        } else {
+            $penaltySeconds = Time::now()->getTimestamp() - $this->lastActivity->getTimestamp();
+            $penalty = ($penaltySeconds) / (24 * 60 * 60);
+        }
 
         return $this->importance + 2 * $effectiveUrgency + $penalty;
     }
