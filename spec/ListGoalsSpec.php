@@ -15,6 +15,7 @@ use rtens\steps\model\BlockIdentifier;
 use rtens\steps\model\GoalIdentifier;
 use rtens\steps\model\StepIdentifier;
 use rtens\steps\model\Time;
+use rtens\steps\projecting\Goal;
 use rtens\steps\projecting\GoalList;
 use rtens\steps\projecting\Step;
 use watoki\karma\testing\Specification;
@@ -114,11 +115,11 @@ class ListGoalsSpec extends Specification {
 
         $this->when(new ListGoals());
         $this->then->returnShouldMatch(function (GoalList $list) {
-            $goals = $list->getGoals();
-            return
-                count($goals) == 2
-                && $goals[0]->getGoal() == new GoalIdentifier('bar')
-                && $goals[1]->getGoal() == new GoalIdentifier('baz');
+            $keys = array_map(function (Goal $goal) {
+                return $goal->getGoal()->getKey();
+            }, $list->getGoals());
+
+            return array_diff($keys, ['bar', 'baz']) == [];
         });
     }
 
