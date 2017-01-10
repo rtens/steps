@@ -37,7 +37,7 @@ class GoRenderer implements WebRenderer {
     public function render($value) {
         if ($value->isTakingStep()) {
             $step = $value->getCurrentStep();
-            $timeLeft = self::UNIT_SECS - Time::now()->getTimestamp() + $step->getStarted()->getTimestamp();
+            $timeLeft = $step->getUnits() * self::UNIT_SECS - Time::now()->getTimestamp() + $step->getStarted()->getTimestamp();
 
             $elements = [
                 new Element('h2', [], [
