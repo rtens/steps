@@ -19,6 +19,10 @@ class Plan extends DomainObject {
      */
     private $steps = [];
 
+    public static function defaultEnd(\DateTimeImmutable $starts) {
+        return $starts->add(new \DateInterval('P1D'));
+    }
+
     public function created(\DateTimeImmutable $starts, \DateTimeImmutable $ends = null) {
         $this->starts = $starts;
         $this->ends = $ends;
@@ -49,7 +53,7 @@ class Plan extends DomainObject {
      * @return \DateTimeImmutable
      */
     public function getEnds() {
-        return $this->ends ?: $this->starts->add(new \DateInterval('P1D'));
+        return $this->ends ?: self::defaultEnd($this->starts);
     }
 
     public function isActive() {
