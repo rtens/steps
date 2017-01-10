@@ -1,0 +1,110 @@
+<?php
+namespace rtens\steps2\domain;
+
+use rtens\udity\domain\objects\DomainObject;
+use rtens\udity\Event;
+use rtens\udity\utils\Time;
+
+class Plan extends DomainObject {
+    /**
+     * @var \DateTimeImmutable
+     */
+    private $starts;
+    /**
+     * @var \DateTimeImmutable
+     */
+    private $ends;
+    /**
+     * @var Step[]
+     */
+    private $steps = [];
+
+    public function created(\DateTimeImmutable $starts, \DateTimeImmutable $ends = null) {
+        $this->starts = $starts;
+        $this->ends = $ends ?: $starts->add(new \DateInterval('P1D'));
+    }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getStarts() {
+        return $this->starts;
+    }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getEnds() {
+        return $this->ends;
+    }
+
+    public function isActive() {
+        return $this->starts < Time::now() && Time::now() < $this->ends;
+    }
+
+    public function getCurrentStep() {
+        foreach ($this->steps as $step) {
+            if ($step->getStarted() && !$step->getCompleted()) {
+                return $step;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return Step[]
+     */
+    public function getNextSteps() {
+        return array_values(array_filter($this->steps, function (Step $step) {
+            return !$step->getStarted();
+        }));
+    }
+
+    /**
+     * @return Step[]
+     */
+    public function getCompletedSteps() {
+        return array_values(array_filter($this->steps, function (Step $step) {
+            return !!$step->getCompleted();
+        }));
+    }
+
+    /**
+     * @param GoalIdentifier $goal
+     * @param float $units
+     * @param bool $splitIntoUnits
+     */
+    public function doPlanStep(GoalIdentifier $goal, $units = 1.0, $splitIntoUnits = true) {
+    }
+
+    public function didPlanStep(GoalIdentifier $goal, $units, $splitIntoUnits) {
+        while ($units > 0) {
+            $decrement = $splitIntoUnits ? min(1, $units) : $units;
+            $units -= $decrement;
+
+            $this->steps[] = new Step($goal, $decrement);
+        }
+    }
+
+    public function doStartNextStep() {
+        if ($this->getCurrentStep()) {
+            throw new \Exception('Already taking a step');
+        } else if (!$this->getNextSteps()) {
+            throw new \Exception('No next step to start');
+        }
+    }
+
+    public function didStartNextStep(Event $event) {
+        $this->getNextSteps()[0]->setStarted($event->getWhen());
+    }
+
+    public function doCompleteStep() {
+        if (!$this->getCurrentStep()) {
+            throw new \Exception('Not taking any step');
+        }
+    }
+
+    public function didCompleteStep(Event $event) {
+        $this->getCurrentStep()->setCompleted($event->getWhen());
+    }
+}
