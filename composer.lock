@@ -163,12 +163,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtens/udity.git",
-                "reference": "6fd7bbfb3e4d68840e1ce8a477240c7467f20656"
+                "reference": "484d72efdbffbc7b00816f08b9bd129e7fd94117"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtens/udity/zipball/6fd7bbfb3e4d68840e1ce8a477240c7467f20656",
-                "reference": "6fd7bbfb3e4d68840e1ce8a477240c7467f20656",
+                "url": "https://api.github.com/repos/rtens/udity/zipball/484d72efdbffbc7b00816f08b9bd129e7fd94117",
+                "reference": "484d72efdbffbc7b00816f08b9bd129e7fd94117",
                 "shasum": ""
             },
             "require": {
@@ -194,7 +194,7 @@
                 }
             ],
             "description": "Framework for prototyping event sourced web applications",
-            "time": "2017-01-10 18:55:22"
+            "time": "2017-01-10 23:44:37"
         },
         {
             "name": "watoki/collections",
