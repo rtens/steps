@@ -64,10 +64,15 @@ class GoRenderer implements WebRenderer {
                         var value = Math.floor((left - Date.now() + start) / 1000);
                         $(".timer").val(value).trigger("change");
                         
-                        if (value == 0) {
+                        if (value <= 0) {
+                            clearInterval(interval);
                             audio.play();
+                            
+                            // Remind every minute
+                            setInterval(function() { audio.play(); }, 60000);
                         }
                     };
+                    var interval = setInterval(update, 1000);
                     
                     $(".timer").knob({
                         max: ' . self::UNIT_SECS . ',
@@ -80,7 +85,6 @@ class GoRenderer implements WebRenderer {
                             return (min>0 ? min + ":" : "") + (sec<10 ? "0" : "") + (i%60);
                         }
                     });
-                    setInterval(update, 1000);
                     
                     update();
 
