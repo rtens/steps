@@ -21,7 +21,21 @@ class Plan extends DomainObject {
 
     public function created(\DateTimeImmutable $starts, \DateTimeImmutable $ends = null) {
         $this->starts = $starts;
-        $this->ends = $ends ?: $starts->add(new \DateInterval('P1D'));
+        $this->ends = $ends;
+    }
+
+    public function caption() {
+        $caption = $this->starts->format('D Y-m-d');
+
+        if ($this->ends) {
+            $caption .= ' - ' . $this->ends->format('D Y-m-d');
+        }
+
+        if ($this->isActive()) {
+            $caption .= ' (active)';
+        }
+
+        return $caption;
     }
 
     /**
@@ -35,11 +49,11 @@ class Plan extends DomainObject {
      * @return \DateTimeImmutable
      */
     public function getEnds() {
-        return $this->ends;
+        return $this->ends ?: $this->starts->add(new \DateInterval('P1D'));
     }
 
     public function isActive() {
-        return $this->starts < Time::now() && Time::now() < $this->ends;
+        return $this->getStarts() < Time::now() && Time::now() < $this->getEnds();
     }
 
     public function getCurrentStep() {

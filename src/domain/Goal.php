@@ -14,4 +14,8 @@ class Goal extends DomainObject {
     public function getName() {
         return $this->name;
     }
+
+    public function caption() {
+        return $this->getName();
+    }
 }
