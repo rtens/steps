@@ -1,0 +1,20 @@
+{
+    "name": "rtens/steps2",
+    "minimum-stability": "dev",
+    "require": {
+        "rtens/udity": "*"
+    },
+    "require-dev": {
+        "rtens/scrut": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "rtens\\steps2\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "rtens\\steps2\\": "spec/"
+        }
+    }
+}
