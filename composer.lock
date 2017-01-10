@@ -4,6 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
+    "hash": "d46e7599ca6f43c0b7167dc92f595a24",
     "content-hash": "2b37d58636a2a82dcdda506f65cd5c5e",
     "packages": [
         {
@@ -57,12 +58,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtens/domin.git",
-                "reference": "39aa434e0483a7636ea9fe34a2e33f97cf7f5afd"
+                "reference": "c20805bbe4c98464683099242c2c318c68d6850d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtens/domin/zipball/39aa434e0483a7636ea9fe34a2e33f97cf7f5afd",
-                "reference": "39aa434e0483a7636ea9fe34a2e33f97cf7f5afd",
+                "url": "https://api.github.com/repos/rtens/domin/zipball/c20805bbe4c98464683099242c2c318c68d6850d",
+                "reference": "c20805bbe4c98464683099242c2c318c68d6850d",
                 "shasum": ""
             },
             "require": {
@@ -106,7 +107,7 @@
                 "ddd",
                 "domain model"
             ],
-            "time": "2016-09-27 09:15:08"
+            "time": "2017-01-10 12:48:57"
         },
         {
             "name": "rtens/scrut",
@@ -162,12 +163,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtens/udity.git",
-                "reference": "4101e3a1b6e2cef9d6082fa310c30b930201a762"
+                "reference": "6fd7bbfb3e4d68840e1ce8a477240c7467f20656"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtens/udity/zipball/4101e3a1b6e2cef9d6082fa310c30b930201a762",
-                "reference": "4101e3a1b6e2cef9d6082fa310c30b930201a762",
+                "url": "https://api.github.com/repos/rtens/udity/zipball/6fd7bbfb3e4d68840e1ce8a477240c7467f20656",
+                "reference": "6fd7bbfb3e4d68840e1ce8a477240c7467f20656",
                 "shasum": ""
             },
             "require": {
@@ -193,7 +194,7 @@
                 }
             ],
             "description": "Framework for prototyping event sourced web applications",
-            "time": "2017-01-06 18:30:53"
+            "time": "2017-01-10 18:55:22"
         },
         {
             "name": "watoki/collections",
@@ -391,7 +392,7 @@
                 "dependency injection",
                 "watoki"
             ],
-            "time": "2016-02-17T05:49:53+00:00"
+            "time": "2016-02-17 05:49:53"
         },
         {
             "name": "watoki/karma",
@@ -479,7 +480,7 @@
                 "type hints",
                 "watoki"
             ],
-            "time": "2016-02-13T08:14:45+00:00"
+            "time": "2016-02-13 08:14:45"
         },
         {
             "name": "watoki/smokey",
