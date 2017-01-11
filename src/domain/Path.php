@@ -5,7 +5,7 @@ use rtens\udity\domain\objects\DomainObject;
 use rtens\udity\Event;
 use rtens\udity\utils\Time;
 
-class Plan extends DomainObject {
+class Path extends DomainObject {
     /**
      * @var \DateTimeImmutable
      */
@@ -72,7 +72,7 @@ class Plan extends DomainObject {
     /**
      * @return Step[]
      */
-    public function getNextSteps() {
+    public function getRemainingSteps() {
         return array_values(array_filter($this->steps, function (Step $step) {
             return !$step->getStarted();
         }));
@@ -104,16 +104,16 @@ class Plan extends DomainObject {
         }
     }
 
-    public function doStartNextStep() {
+    public function doTakeNextStep() {
         if ($this->getCurrentStep()) {
             throw new \Exception('Already taking a step');
-        } else if (!$this->getNextSteps()) {
+        } else if (!$this->getRemainingSteps()) {
             throw new \Exception('No next step to start');
         }
     }
 
-    public function didStartNextStep(Event $event) {
-        $this->getNextSteps()[0]->setStarted($event->getWhen());
+    public function didTakeNextStep(Event $event) {
+        $this->getRemainingSteps()[0]->setStarted($event->getWhen());
     }
 
     public function doCompleteStep() {

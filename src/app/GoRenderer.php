@@ -5,7 +5,7 @@ use rtens\domin\delivery\RendererRegistry;
 use rtens\domin\delivery\web\Element;
 use rtens\domin\delivery\web\HeadElements;
 use rtens\domin\delivery\web\WebRenderer;
-use rtens\steps2\domain\Go;
+use rtens\steps2\domain\Walk;
 use rtens\udity\utils\Time;
 
 class GoRenderer implements WebRenderer {
@@ -27,11 +27,11 @@ class GoRenderer implements WebRenderer {
      * @return bool
      */
     public function handles($value) {
-        return $value instanceof Go;
+        return $value instanceof Walk;
     }
 
     /**
-     * @param Go $value
+     * @param Walk $value
      * @return mixed
      */
     public function render($value) {

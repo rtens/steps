@@ -1,7 +1,7 @@
 <?php
 namespace rtens\steps2\domain;
 
-class Go extends PlanList {
+class Walk extends PathList {
 
     public function hasActivePlan() {
         foreach ($this->getPlans() as $plan) {
@@ -14,7 +14,7 @@ class Go extends PlanList {
 
     public function hasNextStep() {
         foreach ($this->getPlans() as $plan) {
-            if ($plan->getNextSteps()) {
+            if ($plan->getRemainingSteps()) {
                 return true;
             }
         }
@@ -38,6 +38,6 @@ class Go extends PlanList {
      * @return \ReflectionClass
      */
     protected function inferDomainObjectClass() {
-        return new \ReflectionClass(Plan::class);
+        return new \ReflectionClass(Path::class);
     }
 }
