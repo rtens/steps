@@ -39,7 +39,13 @@ class Goal extends DomainObject {
     }
 
     public function caption() {
-        return $this->getName();
+        $caption = $this->getName();
+        if ($this->isAchieved()) {
+            $caption .= ' (achieved)';
+        } else if ($this->isGivenUp()) {
+            $caption .= ' (given up)';
+        }
+        return $caption;
     }
 
     public function doAchieve() {
