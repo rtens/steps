@@ -18,6 +18,10 @@ class Step {
      * @var null|\DateTimeImmutable
      */
     private $completed;
+    /**
+     * @var bool
+     */
+    private $skipped = false;
 
     /**
      * @param GoalIdentifier $goal
@@ -68,5 +72,19 @@ class Step {
      */
     public function setCompleted(\DateTimeImmutable $completed) {
         $this->completed = $completed;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSkipped() {
+        return $this->skipped;
+    }
+
+    /**
+     * @param boolean $skipped
+     */
+    public function setSkipped($skipped = true) {
+        $this->skipped = $skipped;
     }
 }

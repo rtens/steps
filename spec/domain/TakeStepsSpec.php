@@ -37,13 +37,29 @@ class TakeStepsSpec extends DomainSpecification {
         $this->then(Events::named('DidCompleteStep'))->shouldBeAppended();
     }
 
-    function completedStep() {
+    function stepAlreadyCompleted() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('myGoal'), 1, false);
         $this->given(Path::class)->didTakeNextStep();
         $this->given(Path::class)->didCompleteStep();
 
         $this->tryTo(Path::class)->doCompleteStep();
         $this->thenShouldFailWith('Not taking any step');
+    }
+
+    function skipStep() {
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('MyGoal'), 1, false);
+
+        $this->when(Path::class)->doSkipNextStep();
+        $this->then(Events::named('DidSkipNextStep'))->shouldBeAppended();
+    }
+
+    function noMoreStepsLeftToSkip() {
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('MyGoal'), 1, false);
+        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didCompleteStep();
+
+        $this->tryTo(Path::class)->doSkipNextStep();
+        $this->thenShouldFailWith('No next step to skip');
     }
 
     function projectNextSteps() {
@@ -71,7 +87,7 @@ class TakeStepsSpec extends DomainSpecification {
             ->assertEquals($this->projection(Path::class)->getCurrentStep()->getGoal(), new GoalIdentifier('First'));
     }
 
-    function takeSecondStep() {
+    function completeFirstStep() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
         $this->given(Path::class)->didTakeNextStep();
@@ -83,5 +99,18 @@ class TakeStepsSpec extends DomainSpecification {
             ->assertEquals($this->projection(Path::class)->getCompletedSteps()[0]->getCompleted(), Time::now())
             ->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 1)
             ->assertEquals($this->projection(Path::class)->getRemainingSteps()[0]->getGoal(), new GoalIdentifier('Second'));
+    }
+
+    function skipSecondStep() {
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
+        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didSkipNextStep();
+
+        $this->whenProjectObject(Path::class)
+            ->assertEquals(count($this->projection(Path::class)->getCompletedSteps()), 1)
+            ->assertEquals($this->projection(Path::class)->getCompletedSteps()[0]->getGoal(), new GoalIdentifier('First'))
+            ->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 0);
     }
 }

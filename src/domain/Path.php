@@ -74,7 +74,7 @@ class Path extends DomainObject {
      */
     public function getRemainingSteps() {
         return array_values(array_filter($this->steps, function (Step $step) {
-            return !$step->getStarted();
+            return !$step->getStarted() && !$step->isSkipped();
         }));
     }
 
@@ -83,7 +83,7 @@ class Path extends DomainObject {
      */
     public function getCompletedSteps() {
         return array_values(array_filter($this->steps, function (Step $step) {
-            return !!$step->getCompleted();
+            return $step->getCompleted();
         }));
     }
 
@@ -114,6 +114,16 @@ class Path extends DomainObject {
 
     public function didTakeNextStep(Event $event) {
         $this->getRemainingSteps()[0]->setStarted($event->getWhen());
+    }
+
+    public function doSkipNextStep() {
+        if (!$this->getRemainingSteps()) {
+            throw new \Exception('No next step to skip');
+        }
+    }
+
+    public function didSkipNextStep() {
+        $this->getRemainingSteps()[0]->setSkipped();
     }
 
     public function doCompleteStep() {
