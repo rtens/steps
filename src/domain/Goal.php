@@ -9,6 +9,7 @@ class Goal extends DomainObject {
      */
     private $name;
     /**
+     *
      * @var bool
      */
     private $achieved = false;
@@ -23,6 +24,18 @@ class Goal extends DomainObject {
 
     public function getName() {
         return $this->name;
+    }
+
+    public function isOpen() {
+        return !$this->isAchieved() && !$this->isGivenUp();
+    }
+
+    public function isAchieved() {
+        return $this->achieved;
+    }
+
+    public function isGivenUp() {
+        return $this->givenUp;
     }
 
     public function caption() {
