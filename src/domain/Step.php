@@ -1,7 +1,10 @@
 <?php
 namespace rtens\steps2\domain;
 
+use rtens\udity\utils\Time;
+
 class Step {
+    public static $UNIT_SECS = 1500;
     /**
      * @var GoalIdentifier
      */
@@ -44,6 +47,26 @@ class Step {
      */
     public function getUnits() {
         return $this->units;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBeingTaken() {
+        return $this->started && !$this->completed;
+    }
+
+    public function getUnitsLeft() {
+        if ($this->completed) {
+            return 0;
+        }
+        if (!$this->started) {
+            return $this->units;
+        }
+
+        $totalSeconds = $this->units * self::$UNIT_SECS;
+        $secondsPassed = Time::now()->getTimestamp() - $this->started->getTimestamp();
+        return ($totalSeconds - $secondsPassed) / self::$UNIT_SECS;
     }
 
     /**

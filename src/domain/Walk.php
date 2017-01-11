@@ -1,43 +1,92 @@
 <?php
 namespace rtens\steps2\domain;
 
-class Walk extends PathList {
+use rtens\udity\domain\command\Singleton;
+use rtens\udity\Event;
+use rtens\udity\Projection;
 
-    public function hasActivePlan() {
-        foreach ($this->getPlans() as $plan) {
-            if ($plan->isActive()) {
-                return true;
-            }
-        }
-        return false;
+class Walk extends Singleton implements Projection {
+    /**
+     * @var null|PathIdentifier
+     */
+    private $chosenPath;
+    /**
+     * @var PathList
+     */
+    private $paths;
+
+    public function __construct() {
+        parent::__construct();
+        $this->paths = new PathList();
     }
 
-    public function hasNextStep() {
-        foreach ($this->getPlans() as $plan) {
-            if ($plan->getRemainingSteps()) {
-                return true;
-            }
-        }
-        return false;
+    /**
+     * @return null|PathIdentifier
+     */
+    public function getChosenPath() {
+        $path = $this->chosenPath();
+        return $path ? $path->getIdentifier() : null;
     }
 
+    /**
+     * @return null|Step
+     */
     public function getCurrentStep() {
-        foreach ($this->getPlans() as $plan) {
-            if ($plan->getCurrentStep()) {
-                return $plan->getCurrentStep();
+        $path = $this->chosenPath();
+        return $path ? $path->getCurrentStep() : null;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRemainingUnits() {
+        return array_sum(array_map(function (Step $step) {
+            return $step->getUnits();
+        }, $this->remainingSteps()));
+    }
+
+    /**
+     * @return null|Step
+     */
+    public function getNextStep() {
+        if ($this->getCurrentStep()) {
+            return null;
+        }
+
+        $steps = $this->remainingSteps();
+        return $steps ? $steps[0] : null;
+    }
+
+    public function handleChoosePath(PathIdentifier $path) {
+        $this->recordThat('DidChoosePath', ['path' => $path]);
+    }
+
+    public function applyDidChoosePath($path) {
+        $this->chosenPath = $path;
+    }
+
+    public function apply(Event $event) {
+        $this->paths->apply($event);
+        return parent::apply($event);
+    }
+
+    /**
+     * @return null|Path
+     */
+    private function chosenPath() {
+        foreach ($this->paths->getList() as $path) {
+            if ($path->getIdentifier() == $this->chosenPath) {
+                return $path;
             }
         }
         return null;
     }
 
-    public function isTakingStep() {
-        return !!$this->getCurrentStep();
-    }
-
     /**
-     * @return \ReflectionClass
+     * @return Step[]
      */
-    protected function inferDomainObjectClass() {
-        return new \ReflectionClass(Path::class);
+    private function remainingSteps() {
+        $path = $this->chosenPath();
+        return $path ? $path->getRemainingSteps() : [];
     }
 }

@@ -8,7 +8,7 @@ class Application extends Udity {
 
     public function run(WebApplication $ui, array $domainClasses) {
         $ui->setNameAndBrand('steps2');
-        $ui->renderers->add(new GoRenderer($ui->renderers));
+        $ui->renderers->add(new CurrentStepRenderer($ui->renderers));
 
         parent::run($ui, $domainClasses);
     }

@@ -1,6 +1,7 @@
 <?php
 namespace rtens\steps2\domain;
 
+use rtens\udity\AggregateIdentifier;
 use rtens\udity\domain\objects\DomainObject;
 use rtens\udity\Event;
 use rtens\udity\utils\Time;
@@ -19,8 +20,11 @@ class Path extends DomainObject {
      */
     private $steps = [];
 
-    public static function defaultEnd(\DateTimeImmutable $starts) {
-        return $starts->add(new \DateInterval('P1D'));
+    /**
+     * @return AggregateIdentifier|PathIdentifier
+     */
+    public function getIdentifier() {
+        return parent::getIdentifier();
     }
 
     public function created(\DateTimeImmutable $starts, \DateTimeImmutable $ends = null) {
@@ -53,7 +57,7 @@ class Path extends DomainObject {
      * @return \DateTimeImmutable
      */
     public function getEnds() {
-        return $this->ends ?: self::defaultEnd($this->starts);
+        return $this->ends ?: $this->starts->add(new \DateInterval('P1D'));
     }
 
     public function isActive() {

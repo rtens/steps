@@ -3,6 +3,7 @@ namespace rtens\steps2\domain;
 
 use rtens\udity\AggregateIdentifier;
 
-class PlanIdentifier extends AggregateIdentifier {
+class PathIdentifier extends AggregateIdentifier {
+
 
 }
