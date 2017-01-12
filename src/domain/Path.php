@@ -1,7 +1,6 @@
 <?php
 namespace rtens\steps2\domain;
 
-use rtens\udity\AggregateIdentifier;
 use rtens\udity\domain\objects\DomainObject;
 use rtens\udity\Event;
 use rtens\udity\utils\Time;
@@ -21,7 +20,7 @@ class Path extends DomainObject {
     private $steps = [];
 
     /**
-     * @return AggregateIdentifier|PathIdentifier
+     * @return PathIdentifier|\rtens\udity\AggregateIdentifier
      */
     public function getIdentifier() {
         return parent::getIdentifier();

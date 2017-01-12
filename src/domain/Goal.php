@@ -18,6 +18,13 @@ class Goal extends DomainObject {
      */
     private $givenUp = false;
 
+    /**
+     * @return GoalIdentifier|\rtens\udity\AggregateIdentifier
+     */
+    public function getIdentifier() {
+        return parent::getIdentifier();
+    }
+
     public function created($name) {
         $this->name = $name;
     }

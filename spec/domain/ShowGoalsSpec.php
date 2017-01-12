@@ -2,6 +2,7 @@
 namespace rtens\steps2\domain;
 
 use rtens\udity\check\DomainSpecification;
+use rtens\udity\utils\Time;
 
 class ShowGoalsSpec extends DomainSpecification {
 
@@ -42,5 +43,52 @@ class ShowGoalsSpec extends DomainSpecification {
         $goals = $this->projection(GoalList::class)->getList();
         $this->assertEquals(count($goals), 1);
         $this->assertEquals($goals[0]->getName(), 'Bar');
+    }
+
+    function hidePlannedGoals() {
+        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Path::class)->created(Time::at('today'));
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
+
+        $this->whenProject(GoalList::class);
+
+        $goals = $this->projection(GoalList::class)->getList();
+        $this->assertEquals(count($goals), 1);
+        $this->assertEquals($goals[0]->getIdentifier(), new GoalIdentifier('bar'));
+    }
+
+    function showPlannedGoalWithoutUpcomingSteps() {
+        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Path::class)->created(Time::at('yesterday'));
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
+        $this->given(Path::class)->didTakeNextStep();
+
+        $this->whenProject(GoalList::class);
+
+        $goals = $this->projection(GoalList::class)->getList();
+        $this->assertEquals(count($goals), 1);
+    }
+
+    function showGoalsOfPastPaths() {
+        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Path::class)->created(Time::at('yesterday'));
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
+
+        $this->whenProject(GoalList::class);
+
+        $goals = $this->projection(GoalList::class)->getList();
+        $this->assertEquals(count($goals), 1);
+    }
+
+    function hideGoalsOfFuturePaths() {
+        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Path::class)->created(Time::at('tomorrow'));
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
+
+        $this->whenProject(GoalList::class);
+
+        $goals = $this->projection(GoalList::class)->getList();
+        $this->assertEquals(count($goals), 0);
     }
 }
