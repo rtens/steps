@@ -20,4 +20,12 @@ class PathList extends DomainObjectList {
     protected function getItems() {
         return parent::getItems();
     }
+
+    public function options() {
+        $options = parent::options();
+        uksort($options, function ($a, $b) {
+            return $this->getItems()[$a]->isActive() ? -1 : ($this->getItems()[$b]->isActive() ? 1 : 0);
+        });
+        return $options;
+    }
 }

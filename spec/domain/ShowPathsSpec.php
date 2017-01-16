@@ -24,4 +24,13 @@ class ShowPathsSpec extends DomainSpecification {
         $plans = $this->projection(PathList::class)->getList();
         $this->assert()->equals(count($plans), 0);
     }
+
+    function sortOptionsActiveFirst() {
+        $this->given(Path::class, 'foo')->created(Time::at('yesterday'));
+        $this->given(Path::class, 'bar')->created(Time::at('today'));
+        $this->given(Path::class, 'baz')->created(Time::at('last year'));
+
+        $this->whenProject(PathList::class);
+        $this->assertEquals(array_keys($this->projection(PathList::class)->options())[0], 'bar');
+    }
 }
