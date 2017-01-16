@@ -63,6 +63,10 @@ class Path extends DomainObject {
         return $this->getStarts() < Time::now() && Time::now() < $this->getEnds();
     }
 
+    private function isUpcoming() {
+        return $this->getStarts() > Time::now();
+    }
+
     public function getCurrentStep() {
         foreach ($this->steps as $step) {
             if ($step->getStarted() && !$step->getCompleted()) {
@@ -94,8 +98,12 @@ class Path extends DomainObject {
      * @param GoalIdentifier $goal
      * @param float $units
      * @param bool $splitIntoUnits
+     * @throws \Exception
      */
     public function doPlanStep(GoalIdentifier $goal, $units = 1.0, $splitIntoUnits = true) {
+        if (!$this->isActive() && !$this->isUpcoming()) {
+            throw new \Exception('Steps can only be planned for active or upcoming paths');
+        }
     }
 
     public function didPlanStep(GoalIdentifier $goal, $units, $splitIntoUnits) {
