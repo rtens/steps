@@ -17,6 +17,10 @@ class Goal extends DomainObject {
      * @var bool
      */
     private $givenUp = false;
+    /**
+     * @var null|GoalIdentifier
+     */
+    private $parent;
 
     /**
      * @return GoalIdentifier|\rtens\udity\AggregateIdentifier
@@ -25,8 +29,8 @@ class Goal extends DomainObject {
         return parent::getIdentifier();
     }
 
-    public function created($name) {
-        $this->name = $name;
+    public function getParent() {
+        return $this->parent;
     }
 
     public function getName() {
@@ -55,6 +59,10 @@ class Goal extends DomainObject {
         return $caption;
     }
 
+    public function created($name) {
+        $this->name = $name;
+    }
+
     public function doAchieve() {
         $this->guardStillOpen();
     }
@@ -69,6 +77,16 @@ class Goal extends DomainObject {
 
     public function didGiveUp() {
         $this->givenUp = true;
+    }
+
+    public function doMove(GoalIdentifier $parent = null) {
+        if ($parent == $this->getIdentifier()) {
+            throw new \Exception('Goal cannot be its own parent');
+        }
+    }
+
+    public function didMove(GoalIdentifier $parent = null) {
+        $this->parent = $parent;
     }
 
     private function guardStillOpen() {
