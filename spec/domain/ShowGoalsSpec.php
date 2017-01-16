@@ -91,4 +91,15 @@ class ShowGoalsSpec extends DomainSpecification {
         $goals = $this->projection(GoalList::class)->getList();
         $this->assertEquals(count($goals), 0);
     }
+
+    function sortOptionsOpenGoalsFirst() {
+        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'baz')->created('Baz');
+        $this->given(Goal::class, 'foo')->didAchieve();
+        $this->given(Goal::class, 'baz')->didAchieve();
+
+        $this->whenProject(GoalList::class);
+        $this->assertEquals(array_keys($this->projection(GoalList::class)->options())[0], 'bar');
+    }
 }

@@ -50,4 +50,19 @@ class GoalList extends DomainObjectList {
         }
         return false;
     }
+
+    /**
+     * @return \rtens\udity\Projection[]|Goal[]
+     */
+    protected function getItems() {
+        return parent::getItems();
+    }
+
+    public function options() {
+        $options = parent::options();
+        uksort($options, function ($a, $b) {
+            return $this->getItems()[$a]->isOpen() ? -1 : ($this->getItems()[$b]->isOpen() ? 1 : 0);
+        });
+        return $options;
+    }
 }
