@@ -1,6 +1,7 @@
 <?php
 namespace rtens\steps2\domain;
 
+use rtens\domin\parameters\Html;
 use rtens\udity\domain\objects\DomainObject;
 
 class Goal extends DomainObject {
@@ -25,6 +26,10 @@ class Goal extends DomainObject {
      * @var GoalIdentifier[]
      */
     private $links = [];
+    /**
+     * @var Html[]
+     */
+    private $notes = [];
 
     /**
      * @return GoalIdentifier|\rtens\udity\AggregateIdentifier
@@ -73,6 +78,24 @@ class Goal extends DomainObject {
      */
     public function isGivenUp() {
         return $this->givenUp;
+    }
+
+    /**
+     * @return Html[]
+     */
+    public function getNotes() {
+        return $this->notes;
+    }
+
+    public function didAddNote(Html $note) {
+        $this->notes[] = $note;
+    }
+
+    /**
+     * @param Html[] $notes
+     */
+    public function setNotes($notes) {
+        $this->notes = $notes;
     }
 
     public function caption() {
