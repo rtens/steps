@@ -20,4 +20,20 @@ class HierarchicalGoalsSpec extends DomainSpecification {
         $this->tryTo(Goal::class, 'foo')->doMove(new GoalIdentifier('foo'));
         $this->thenShouldFailWith('Goal cannot be its own parent');
     }
+
+    function listAncestorsInOptions() {
+        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'baz')->created('Baz');
+
+        $this->given(Goal::class, 'bar')->doMove(new GoalIdentifier('foo'));
+        $this->given(Goal::class, 'baz')->doMove(new GoalIdentifier('bar'));
+
+        $this->whenProject(GoalList::class);
+        $this->assertEquals($this->projection(GoalList::class)->options(), [
+            'foo' => 'Foo',
+            'bar' => 'Foo: Bar',
+            'baz' => 'Foo: Bar: Baz'
+        ]);
+    }
 }

@@ -10,6 +10,10 @@ class GoalList extends DomainObjectList {
      * @var PathList
      */
     private $paths;
+    /**
+     * @var string[]
+     */
+    private $parents = [];
 
     public function __construct() {
         $this->paths = new PathList();
@@ -36,6 +40,10 @@ class GoalList extends DomainObjectList {
         return parent::apply($event);
     }
 
+    public function applyDidMove(GoalIdentifier $parent, Event $event) {
+        $this->parents[$event->getAggregateIdentifier()->getKey()] = $parent->getKey();
+    }
+
     private function hasUpcomingStep(GoalIdentifier $goal) {
         foreach ($this->paths->getItems() as $path) {
             if ($path->getEnds() < Time::now()) {
@@ -59,10 +67,27 @@ class GoalList extends DomainObjectList {
     }
 
     public function options() {
-        $options = parent::options();
-        uksort($options, function ($a, $b) {
-            return $this->getItems()[$a]->isOpen() ? -1 : ($this->getItems()[$b]->isOpen() ? 1 : 0);
+        $items = $this->getItems();
+        uasort($items, function (Goal $a, Goal $b) {
+            return $a->isOpen() ? -1 : ($b->isOpen() ? 1 : 0);
         });
-        return $options;
+        return array_map(function (Goal $goal) {
+            return $this->fullName($goal);
+        }, $items);
+    }
+
+    private function fullName(Goal $goal) {
+        $lineage = [$goal->caption()];
+
+        $current = $goal->getIdentifier()->getKey();
+        while ($current) {
+            if (!array_key_exists($current, $this->parents)) {
+                $current = null;
+            } else {
+                $current = $this->parents[$current];
+                array_unshift($lineage, $this->getItems()[$current]->caption());
+            }
+        }
+        return implode(': ', $lineage);
     }
 }
