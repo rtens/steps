@@ -21,6 +21,10 @@ class Goal extends DomainObject {
      * @var null|GoalIdentifier
      */
     private $parent;
+    /**
+     * @var GoalIdentifier[]
+     */
+    private $links = [];
 
     /**
      * @return GoalIdentifier|\rtens\udity\AggregateIdentifier
@@ -34,6 +38,13 @@ class Goal extends DomainObject {
      */
     public function getParent() {
         return $this->parent;
+    }
+
+    /**
+     * @return GoalIdentifier[]
+     */
+    public function getLinks() {
+        return $this->links;
     }
 
     /**
@@ -102,6 +113,16 @@ class Goal extends DomainObject {
 
     public function didMove(GoalIdentifier $parent = null) {
         $this->parent = $parent;
+    }
+
+    public function doLink(GoalIdentifier $to) {
+        if ($to == $this->getIdentifier()) {
+            throw new \Exception('Cannot link a Goal to itself');
+        }
+    }
+
+    public function didLink(GoalIdentifier $to) {
+        $this->links[] = $to;
     }
 
     private function guardStillOpen() {

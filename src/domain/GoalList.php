@@ -24,7 +24,10 @@ class GoalList extends DomainObjectList {
      */
     public function getList() {
         return array_values(array_filter($this->getGoals(), function (Goal $goal) {
-            return $goal->isOpen() && !$this->hasUpcomingStep($goal->getIdentifier());
+            return
+                $goal->isOpen()
+                && !$this->hasUpcomingStep($goal)
+                && !$this->hasOpenLinks($goal);
         }));
     }
 
@@ -44,16 +47,25 @@ class GoalList extends DomainObjectList {
         $this->parents[$event->getAggregateIdentifier()->getKey()] = $parent->getKey();
     }
 
-    private function hasUpcomingStep(GoalIdentifier $goal) {
+    private function hasUpcomingStep(Goal $goal) {
         foreach ($this->paths->getItems() as $path) {
             if ($path->getEnds() < Time::now()) {
                 continue;
             }
 
             foreach ($path->getRemainingSteps() as $step) {
-                if ($step->getGoal() == $goal) {
+                if ($step->getGoal() == $goal->getIdentifier()) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    private function hasOpenLinks(Goal $goal) {
+        foreach ($goal->getLinks() as $link) {
+            if ($this->getItems()[$link->getKey()]->isOpen()) {
+                return true;
             }
         }
         return false;
