@@ -59,14 +59,23 @@ class Path extends DomainObject {
         return $this->ends ?: $this->starts->add(new \DateInterval('P1D'));
     }
 
+    /**
+     * @return bool
+     */
     public function isActive() {
         return $this->getStarts() < Time::now() && Time::now() < $this->getEnds();
     }
 
+    /**
+     * @return bool
+     */
     private function isUpcoming() {
         return $this->getStarts() > Time::now();
     }
 
+    /**
+     * @return null|Step
+     */
     public function getCurrentStep() {
         foreach ($this->steps as $step) {
             if ($step->getStarted() && !$step->getCompleted()) {

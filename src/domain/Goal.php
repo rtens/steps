@@ -29,22 +29,37 @@ class Goal extends DomainObject {
         return parent::getIdentifier();
     }
 
+    /**
+     * @return null|GoalIdentifier
+     */
     public function getParent() {
         return $this->parent;
     }
 
+    /**
+     * @return string
+     */
     public function getName() {
         return $this->name;
     }
 
+    /**
+     * @return bool
+     */
     public function isOpen() {
         return !$this->isAchieved() && !$this->isGivenUp();
     }
 
+    /**
+     * @return bool
+     */
     public function isAchieved() {
         return $this->achieved;
     }
 
+    /**
+     * @return bool
+     */
     public function isGivenUp() {
         return $this->givenUp;
     }
