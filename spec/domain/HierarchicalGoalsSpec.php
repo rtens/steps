@@ -36,4 +36,19 @@ class HierarchicalGoalsSpec extends DomainSpecification {
             'baz' => 'Foo: Bar: Baz'
         ]);
     }
+
+    function onlyListLeafGoals() {
+        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'baz')->created('Baz');
+
+        $this->given(Goal::class, 'bar')->doMove(new GoalIdentifier('foo'));
+        $this->given(Goal::class, 'baz')->doMove(new GoalIdentifier('bar'));
+
+        $this->whenProject(GoalList::class);
+
+        $goals = $this->projection(GoalList::class)->getList();
+        $this->assertEquals(count($goals), 1);
+        $this->assertEquals($goals[0]->getName(), 'Baz');
+    }
 }
