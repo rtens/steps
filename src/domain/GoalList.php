@@ -44,8 +44,8 @@ class GoalList extends DomainObjectList {
         return parent::apply($event);
     }
 
-    public function applyDidMove(GoalIdentifier $parent, Event $event) {
-        $this->parents[$event->getAggregateIdentifier()->getKey()] = $parent->getKey();
+    public function applyDidMove(Event $event, GoalIdentifier $parent = null) {
+        $this->parents[$event->getAggregateIdentifier()->getKey()] = $parent ? $parent->getKey() : null;
     }
 
     private function hasUpcomingStep(Goal $goal) {
@@ -99,15 +99,15 @@ class GoalList extends DomainObjectList {
     }
 
     private function fullName(Goal $goal) {
-        $lineage = [$goal->caption()];
+        $lineage = [];
 
         $current = $goal->getIdentifier()->getKey();
         while ($current) {
+            array_unshift($lineage, $this->getItems()[$current]->caption());
             if (!array_key_exists($current, $this->parents)) {
                 $current = null;
             } else {
                 $current = $this->parents[$current];
-                array_unshift($lineage, $this->getItems()[$current]->caption());
             }
         }
         return implode(': ', $lineage);

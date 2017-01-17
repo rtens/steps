@@ -26,6 +26,7 @@ class HierarchicalGoalsSpec extends DomainSpecification {
         $this->given(Goal::class, 'bar')->created('Bar');
         $this->given(Goal::class, 'baz')->created('Baz');
 
+        $this->given(Goal::class, 'foo')->doMove(null);
         $this->given(Goal::class, 'bar')->doMove(new GoalIdentifier('foo'));
         $this->given(Goal::class, 'baz')->doMove(new GoalIdentifier('bar'));
 
