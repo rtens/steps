@@ -32,13 +32,9 @@ class Goal extends DomainObject {
      */
     private $notes = [];
     /**
-     * @var int
+     * @var null|Rating
      */
-    private $importance = 0;
-    /**
-     * @var int
-     */
-    private $urgency = 0;
+    private $rating;
     /**
      * @var null|\DateTimeImmutable
      */
@@ -53,6 +49,47 @@ class Goal extends DomainObject {
      */
     public function getIdentifier() {
         return parent::getIdentifier();
+    }
+
+    /**
+     * @param string $name
+     * @param GoalIdentifier|null $parent
+     * @param GoalIdentifier[]|null $links
+     * @param Rating|null $rating
+     * @param \DateTimeImmutable|null $deadline
+     * @param Quota|null $quota
+     * @param Html|null $note
+     */
+    public function create($name,
+                            GoalIdentifier $parent = null,
+                            array $links = null,
+                            Rating $rating = null,
+                            \DateTimeImmutable $deadline = null,
+                            Quota $quota = null,
+                            Html $note = null) {
+
+        $this->recordThat('Created', ['name' => $name]);
+
+        if (!is_null($parent)) {
+            $this->recordThat('DidMove', ['parent' => $parent]);
+        }
+        if (!is_null($links)) {
+            foreach ($links as $link) {
+                $this->recordThat('DidLink', ['to' => $link]);
+            }
+        }
+        if (!is_null($rating)) {
+            $this->recordThat('DidRate', ['rating' => $rating]);
+        }
+        if (!is_null($deadline)) {
+            $this->recordThat('ChangedDeadline', ['deadline' => $deadline]);
+        }
+        if (!is_null($quota)) {
+            $this->recordThat('ChangedQuota', ['quota' => $quota]);
+        }
+        if (!is_null($note)) {
+            $this->recordThat('DidAddNote', ['note' => $note]);
+        }
     }
 
     public function created($name) {
@@ -137,27 +174,12 @@ class Goal extends DomainObject {
         return $this->givenUp;
     }
 
-    /**
-     * @param [0;10] $importance
-     * @param [0;10] $urgency
-     */
-    public function didRate($importance, $urgency) {
-        $this->importance = $importance;
-        $this->urgency = $urgency;
+    public function didRate(Rating $rating) {
+        $this->rating = $rating;
     }
 
-    /**
-     * @return int
-     */
-    public function getImportance() {
-        return $this->importance;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUrgency() {
-        return $this->urgency;
+    public function getRating() {
+        return $this->rating;
     }
 
     /**
