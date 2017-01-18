@@ -101,5 +101,7 @@ class ShowGoalsSpec extends DomainSpecification {
 
         $this->whenProject(GoalList::class);
         $this->assertEquals(array_keys($this->projection(GoalList::class)->options())[0], 'bar');
+        $this->assertEquals(array_keys($this->projection(GoalList::class)->options())[1], 'baz');
+        $this->assertEquals(array_keys($this->projection(GoalList::class)->options())[2], 'foo');
     }
 }

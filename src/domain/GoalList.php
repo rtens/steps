@@ -105,7 +105,10 @@ class GoalList extends DomainObjectList {
     public function options() {
         $items = $this->getItems();
         uasort($items, function (Goal $a, Goal $b) {
-            return $a->isOpen() ? -1 : ($b->isOpen() ? 1 : 0);
+            if ($a->isOpen() == $b->isOpen()) {
+                return strcmp($this->fullName($a), $this->fullName($b));
+            }
+            return $a->isOpen() ? -1 : 1;
         });
         return array_map(function (Goal $goal) {
             return $this->fullName($goal);
