@@ -25,7 +25,7 @@ class GoalList extends DomainObjectList {
     public function getList() {
         return array_values(array_filter($this->getGoals(), function (Goal $goal) {
             return
-                $goal->isOpen()
+                $this->isOpen($goal)
                 && !$this->hasUpcomingStep($goal)
                 && !$this->hasOpenLinks($goal)
                 && !$this->hasOpenChildren($goal);
@@ -79,6 +79,20 @@ class GoalList extends DomainObjectList {
             }
         }
         return false;
+    }
+
+    private function isOpen(Goal $goal) {
+        if (!$goal->isOpen()) {
+            return false;
+        } else if (!$this->hasOpenParent($goal)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private function hasOpenParent(Goal $goal) {
+        return !$goal->getParent() || $this->isOpen($this->getItems()[$goal->getParent()->getKey()]);
     }
 
     /**
