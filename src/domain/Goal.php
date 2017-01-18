@@ -55,6 +55,46 @@ class Goal extends DomainObject {
         return parent::getIdentifier();
     }
 
+    public function created($name) {
+        $this->name = $name;
+    }
+
+    public function doAchieve() {
+        $this->guardStillOpen();
+    }
+
+    public function didAchieve() {
+        $this->achieved = true;
+    }
+
+    public function doGiveUp() {
+        $this->guardStillOpen();
+    }
+
+    public function didGiveUp() {
+        $this->givenUp = true;
+    }
+
+    public function doMove(GoalIdentifier $parent = null) {
+        if ($parent == $this->getIdentifier()) {
+            throw new \Exception('Goal cannot be its own parent');
+        }
+    }
+
+    public function didMove(GoalIdentifier $parent = null) {
+        $this->parent = $parent;
+    }
+
+    public function doLink(GoalIdentifier $to) {
+        if ($to == $this->getIdentifier()) {
+            throw new \Exception('Cannot link a Goal to itself');
+        }
+    }
+
+    public function didLink(GoalIdentifier $to) {
+        $this->links[] = $to;
+    }
+
     /**
      * @return null|GoalIdentifier
      */
@@ -181,46 +221,6 @@ class Goal extends DomainObject {
             $caption .= ' (given up)';
         }
         return $caption;
-    }
-
-    public function created($name) {
-        $this->name = $name;
-    }
-
-    public function doAchieve() {
-        $this->guardStillOpen();
-    }
-
-    public function didAchieve() {
-        $this->achieved = true;
-    }
-
-    public function doGiveUp() {
-        $this->guardStillOpen();
-    }
-
-    public function didGiveUp() {
-        $this->givenUp = true;
-    }
-
-    public function doMove(GoalIdentifier $parent = null) {
-        if ($parent == $this->getIdentifier()) {
-            throw new \Exception('Goal cannot be its own parent');
-        }
-    }
-
-    public function didMove(GoalIdentifier $parent = null) {
-        $this->parent = $parent;
-    }
-
-    public function doLink(GoalIdentifier $to) {
-        if ($to == $this->getIdentifier()) {
-            throw new \Exception('Cannot link a Goal to itself');
-        }
-    }
-
-    public function didLink(GoalIdentifier $to) {
-        $this->links[] = $to;
     }
 
     private function guardStillOpen() {
