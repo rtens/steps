@@ -64,6 +64,25 @@ class Path extends DomainObject {
         $this->getRemainingSteps()[0]->setStarted($event->getWhen());
     }
 
+    public function doTakeStep(GoalIdentifier $of) {
+        foreach ($this->getRemainingSteps() as $step) {
+            if ($step->getGoal() == $of) {
+                return;
+            }
+        }
+
+        throw new \Exception('No remaining step for this goal');
+    }
+
+    public function didTakeStep(GoalIdentifier $of, Event $event) {
+        foreach ($this->getRemainingSteps() as $step) {
+            if ($step->getGoal() == $of) {
+                $step->setStarted($event->getWhen());
+                return;
+            }
+        }
+    }
+
     public function doSkipNextStep() {
         if (!$this->getRemainingSteps()) {
             throw new \Exception('No next step to skip');

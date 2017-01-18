@@ -113,4 +113,38 @@ class TakeStepsSpec extends DomainSpecification {
             ->assertEquals($this->projection(Path::class)->getCompletedSteps()[0]->getGoal(), new GoalIdentifier('First'))
             ->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 0);
     }
+
+    function notAPlannedStep() {
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
+
+        $this->tryTo(Path::class)->doTakeStep(new GoalIdentifier('foo'));
+        $this->thenShouldFailWith('No remaining step for this goal');
+    }
+
+    function stepOfGoalAlreadyCompleted() {
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
+        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didCompleteStep();
+
+        $this->tryTo(Path::class)->doTakeStep(new GoalIdentifier('First'));
+        $this->thenShouldFailWith('No remaining step for this goal');
+    }
+
+    function takeAnyStep() {
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
+        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didCompleteStep();
+
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
+        $this->given(Path::class)->didTakeStep(new GoalIdentifier('Second'));
+
+        $this->whenProjectObject(Path::class)
+            ->assertEquals($this->projection(Path::class)->getCurrentStep()->getGoal(), new GoalIdentifier('Second'))
+            ->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 2)
+            ->assertEquals($this->projection(Path::class)->getRemainingSteps()[0]->getGoal(), new GoalIdentifier('First'))
+            ->assertEquals($this->projection(Path::class)->getRemainingSteps()[1]->getGoal(), new GoalIdentifier('Second'));
+    }
 }
