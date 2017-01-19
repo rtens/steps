@@ -20,7 +20,10 @@ class Application extends Udity {
             },
             function (GoalList $value) use ($ui) {
                 return new DataTable((new ObjectTable($value->getList(), $ui->types))
-                ->selectProperties(['parents', 'name']));
+                    ->selectProperties(['parents', 'name', 'rating', 'left', 'quota'])
+                    ->setFilter('left', function ($left) {
+                        return $left ? round($left, 1) : null;
+                    }));
             }));
 
         $ui->menu->add(new ActionMenuItem('New', 'Goal$create'));

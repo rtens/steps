@@ -55,6 +55,18 @@ class RankedGoal {
         return $this->goal->getName();
     }
 
+    public function getRating() {
+        return $this->goal->getRating();
+    }
+
+    public function getLeft() {
+        return $this->goal->getDaysLeft();
+    }
+
+    public function getQuota() {
+        return $this->goal->getQuota();
+    }
+
     public function getFullName() {
         return $this->getParents() . $this->getName();
     }

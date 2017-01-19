@@ -33,4 +33,8 @@ class Rating {
     public function getUrgency() {
         return $this->urgency;
     }
+
+    function __toString() {
+        return $this->importance . 'i ' . $this->urgency . 'u';
+    }
 }
