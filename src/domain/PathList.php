@@ -17,7 +17,7 @@ class PathList extends DomainObjectList {
     /**
      * @return \rtens\udity\Projection[]|Path[]
      */
-    protected function getItems() {
+    public function getItems() {
         return parent::getItems();
     }
 

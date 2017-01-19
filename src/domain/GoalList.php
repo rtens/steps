@@ -1,54 +1,76 @@
 <?php
 namespace rtens\steps2\domain;
 
-use rtens\udity\domain\objects\DomainObjectList;
 use rtens\udity\Event;
+use rtens\udity\Projection;
 use rtens\udity\utils\Time;
 
-class GoalList extends DomainObjectList {
+class GoalList implements Projection {
     /**
      * @var PathList
      */
     private $paths;
     /**
-     * @var string[]
+     * @var RankedGoal[]
      */
-    private $parents = [];
+    private $goals = [];
 
     public function __construct() {
         $this->paths = new PathList();
+    }
+
+    public function apply(Event $event) {
+        $this->paths->apply($event);
+
+        $key = $event->getAggregateIdentifier()->getKey();
+        if ($event->getAggregateIdentifier() instanceof GoalIdentifier) {
+            if (!array_key_exists($key, $this->goals)) {
+                $this->goals[$key] = new RankedGoal(new Goal($event->getAggregateIdentifier()), $this);
+            }
+        }
+
+        foreach ($this->goals as $goal) {
+            $goal->apply($event);
+        }
     }
 
     /**
      * @return \rtens\udity\Projection[]|Goal[]
      */
     public function getList() {
-        return array_values(array_filter($this->getGoals(), function (Goal $goal) {
+        return array_values(array_filter($this->goals, function (RankedGoal $goal) {
             return
-                $this->isOpen($goal)
+                $goal->isOpen()
                 && !$this->hasUpcomingStep($goal)
-                && !$this->hasOpenLinks($goal)
-                && !$this->hasOpenChildren($goal);
+                && !$goal->hasOpenLinks()
+                && !$goal->hasOpenChildren();
         }));
     }
 
     /**
-     * @return \rtens\udity\Projection[]|Goal[]
+     * @param GoalIdentifier $identifier
+     * @return \rtens\udity\Projection|RankedGoal
      */
-    protected function getGoals() {
-        return parent::getList();
+    public function goal(GoalIdentifier $identifier) {
+        return $this->goals[$identifier->getKey()];
     }
 
-    public function apply(Event $event) {
-        $this->paths->apply($event);
-        return parent::apply($event);
+    public function options() {
+        $items = $this->goals;
+
+        uasort($items, function (RankedGoal $a, RankedGoal $b) {
+            if ($a->isOpen() == $b->isOpen()) {
+                return strcmp($a->getFullName(), $b->getFullName());
+            }
+            return $a->isOpen() ? -1 : 1;
+        });
+
+        return array_map(function (RankedGoal $goal) {
+            return $goal->getFullName();
+        }, $items);
     }
 
-    public function applyDidMove(Event $event, GoalIdentifier $parent = null) {
-        $this->parents[$event->getAggregateIdentifier()->getKey()] = $parent ? $parent->getKey() : null;
-    }
-
-    private function hasUpcomingStep(Goal $goal) {
+    private function hasUpcomingStep(RankedGoal $goal) {
         foreach ($this->paths->getItems() as $path) {
             if ($path->getEnds() < Time::now()) {
                 continue;
@@ -61,72 +83,5 @@ class GoalList extends DomainObjectList {
             }
         }
         return false;
-    }
-
-    private function hasOpenLinks(Goal $goal) {
-        foreach ($goal->getLinks() as $link) {
-            if ($this->getItems()[$link->getKey()]->isOpen()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private function hasOpenChildren(Goal $goal) {
-        foreach ($this->parents as $child => $parent) {
-            if ($parent == $goal->getIdentifier()->getKey() && $this->getItems()[$child]->isOpen()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private function isOpen(Goal $goal) {
-        if (!$goal->isOpen()) {
-            return false;
-        } else if (!$this->hasOpenParent($goal)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private function hasOpenParent(Goal $goal) {
-        return !$goal->getParent() || $this->isOpen($this->getItems()[$goal->getParent()->getKey()]);
-    }
-
-    /**
-     * @return \rtens\udity\Projection[]|Goal[]
-     */
-    protected function getItems() {
-        return parent::getItems();
-    }
-
-    public function options() {
-        $items = $this->getItems();
-        uasort($items, function (Goal $a, Goal $b) {
-            if ($a->isOpen() == $b->isOpen()) {
-                return strcmp($this->fullName($a), $this->fullName($b));
-            }
-            return $a->isOpen() ? -1 : 1;
-        });
-        return array_map(function (Goal $goal) {
-            return $this->fullName($goal);
-        }, $items);
-    }
-
-    private function fullName(Goal $goal) {
-        $lineage = [];
-
-        $current = $goal->getIdentifier()->getKey();
-        while ($current) {
-            array_unshift($lineage, $this->getItems()[$current]->caption());
-            if (!array_key_exists($current, $this->parents)) {
-                $current = null;
-            } else {
-                $current = $this->parents[$current];
-            }
-        }
-        return implode(': ', $lineage);
     }
 }
