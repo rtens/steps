@@ -34,6 +34,10 @@ class GoalList implements Projection {
         }
     }
 
+    public function getGoals() {
+        return $this->goals;
+    }
+
     /**
      * @return \rtens\udity\Projection[]|Goal[]
      */

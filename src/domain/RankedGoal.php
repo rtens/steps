@@ -14,10 +14,6 @@ class RankedGoal {
      * @var GoalList
      */
     private $list;
-    /**
-     * @var GoalIdentifier[]
-     */
-    private $children = [];
 
     public function __construct(Goal $goal, GoalList $list) {
         $this->goal = $goal;
@@ -43,7 +39,7 @@ class RankedGoal {
      * @return string
      */
     public function getParents() {
-        $parent = $this->goal->getParent();
+        $parent = $this->getParent();
         if (!$parent) {
             return null;
         }
@@ -64,7 +60,7 @@ class RankedGoal {
     }
 
     public function isOpen() {
-        $parent = $this->goal->getParent();
+        $parent = $this->getParent();
         if ($parent && !$this->list->goal($parent)->isOpen()) {
             return false;
         }
@@ -83,24 +79,27 @@ class RankedGoal {
 
     public function hasOpenChildren() {
         foreach ($this->getChildren() as $child) {
-            if ($this->list->goal($child)->isOpen()) {
+            if ($child->isOpen()) {
                 return true;
             }
         }
         return false;
     }
 
-    public function applyGoalDidMove(AggregateIdentifier $goal, GoalIdentifier $parent = null) {
-        if ($parent == $this->getIdentifier()) {
-            $this->children[] = $goal;
-        }
+    /**
+     * @return RankedGoal[]
+     */
+    public function getChildren() {
+        return array_filter($this->list->getGoals(), function (RankedGoal $goal) {
+            return $goal->getParent() == $this->getIdentifier();
+        });
     }
 
     /**
-     * @return GoalIdentifier[]
+     * @return null|GoalIdentifier
      */
-    public function getChildren() {
-        return $this->children;
+    private function getParent() {
+        return $this->goal->getParent();
     }
 
     private function invokeEventHandler(Event $event) {

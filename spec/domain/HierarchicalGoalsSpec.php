@@ -39,12 +39,13 @@ class HierarchicalGoalsSpec extends DomainSpecification {
     }
 
     function onlyListLeafGoals() {
-        $this->given(Goal::class, 'foo')->created('Foo');
         $this->given(Goal::class, 'bar')->created('Bar');
-        $this->given(Goal::class, 'baz')->created('Baz');
-
         $this->given(Goal::class, 'bar')->doMove(new GoalIdentifier('foo'));
+
+        $this->given(Goal::class, 'baz')->created('Baz');
         $this->given(Goal::class, 'baz')->doMove(new GoalIdentifier('bar'));
+
+        $this->given(Goal::class, 'foo')->created('Foo');
 
         $this->whenProject(GoalList::class);
 
@@ -71,12 +72,13 @@ class HierarchicalGoalsSpec extends DomainSpecification {
 
     function hideGoalsWithAchievedParent() {
         $this->given(Goal::class, 'foo')->created('Foo');
-        $this->given(Goal::class, 'bar')->created('Bar');
-        $this->given(Goal::class, 'baz')->created('Baz');
-
-        $this->given(Goal::class, 'bar')->doMove(new GoalIdentifier('foo'));
-        $this->given(Goal::class, 'baz')->doMove(new GoalIdentifier('bar'));
         $this->given(Goal::class, 'foo')->didAchieve();
+
+        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'bar')->doMove(new GoalIdentifier('foo'));
+
+        $this->given(Goal::class, 'baz')->created('Baz');
+        $this->given(Goal::class, 'baz')->doMove(new GoalIdentifier('bar'));
 
         $this->whenProject(GoalList::class);
 
