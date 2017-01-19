@@ -44,8 +44,7 @@ class RankedGoal {
             return null;
         }
 
-        $parentGoal = $this->list->goal($parent);
-        return $parentGoal->getParents() . $parentGoal->getName() . ': ';
+        return $parent->getParents() . $parent->getName() . ': ';
     }
 
     /**
@@ -56,7 +55,13 @@ class RankedGoal {
     }
 
     public function getRating() {
-        return $this->goal->getRating();
+        $rating = $this->goal->getRating();
+
+        if (!$rating && $this->getParent()) {
+            return $this->getParent()->getRating();
+        }
+
+        return $rating;
     }
 
     public function getLeft() {
@@ -67,13 +72,22 @@ class RankedGoal {
         return $this->goal->getQuota();
     }
 
+    public function getRank() {
+        $rating = 0;
+        if ($this->getRating()) {
+            $rating = $this->getRating()->getUrgency() * 2 + $this->getRating()->getImportance();
+        }
+
+        return $rating;
+    }
+
     public function getFullName() {
         return $this->getParents() . $this->getName();
     }
 
     public function isOpen() {
         $parent = $this->getParent();
-        if ($parent && !$this->list->goal($parent)->isOpen()) {
+        if ($parent && !$parent->isOpen()) {
             return false;
         }
 
@@ -103,15 +117,19 @@ class RankedGoal {
      */
     public function getChildren() {
         return array_filter($this->list->getGoals(), function (RankedGoal $goal) {
-            return $goal->getParent() == $this->getIdentifier();
+            $parent = $goal->getParent();
+            return $parent && $parent->getIdentifier() == $this->getIdentifier();
         });
     }
 
     /**
-     * @return null|GoalIdentifier
+     * @return null|RankedGoal
      */
     private function getParent() {
-        return $this->goal->getParent();
+        if (!$this->goal->getParent()) {
+            return null;
+        }
+        return $this->list->goal($this->goal->getParent());
     }
 
     private function invokeEventHandler(Event $event) {

@@ -20,7 +20,7 @@ class Application extends Udity {
             },
             function (GoalList $value) use ($ui) {
                 return new DataTable((new ObjectTable($value->getList(), $ui->types))
-                    ->selectProperties(['parents', 'name', 'rating', 'left', 'quota'])
+                    ->selectProperties(['parents', 'name', 'rating', 'left', 'quota', 'rank'])
                     ->setFilter('left', function ($left) {
                         return $left ? round($left, 1) : null;
                     }));
