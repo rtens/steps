@@ -22,7 +22,10 @@ class Application extends Udity {
                 return new DataTable((new ObjectTable($value->getList(), $ui->types))
                     ->selectProperties(['parents', 'name', 'rating', 'left', 'quota', 'rank'])
                     ->setFilter('left', function ($left) {
-                        return $left ? round($left, 1) : null;
+                        return $left !== null ? round($left, 1) : null;
+                    })
+                    ->setFilter('rank', function ($rank) {
+                        return round($rank, 1);
                     }));
             }));
 

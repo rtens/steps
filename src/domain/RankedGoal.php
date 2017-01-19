@@ -57,15 +57,25 @@ class RankedGoal {
     public function getRating() {
         $rating = $this->goal->getRating();
 
-        if (!$rating && $this->getParent()) {
+        if ($rating != null) {
+            return $rating;
+        } if ($this->getParent()) {
             return $this->getParent()->getRating();
         }
 
-        return $rating;
+        return null;
     }
 
     public function getLeft() {
-        return $this->goal->getDaysLeft();
+        $left = $this->goal->getDaysLeft();
+
+        if ($left !== null) {
+            return $left;
+        } else if ($this->getParent()) {
+            return $this->getParent()->getLeft();
+        }
+
+        return null;
     }
 
     public function getQuota() {
@@ -78,7 +88,12 @@ class RankedGoal {
             $rating = $this->getRating()->getUrgency() * 2 + $this->getRating()->getImportance();
         }
 
-        return $rating;
+        $panic = 0;
+        if ($this->getLeft() !== null) {
+            $panic = min(30, max(37 - $this->getLeft(), 0));
+        }
+
+        return $rating + $panic;
     }
 
     public function getFullName() {
