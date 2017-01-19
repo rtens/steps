@@ -112,6 +112,10 @@ class Goal extends DomainObject {
         $this->givenUp = true;
     }
 
+    public function setName($name) {
+        $this->name = $name;
+    }
+
     public function doMove(GoalIdentifier $parent = null) {
         if ($parent == $this->getIdentifier()) {
             throw new \Exception('Goal cannot be its own parent');
