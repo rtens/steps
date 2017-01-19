@@ -11,8 +11,8 @@ use rtens\udity\utils\Time;
 class ChoosePathSpec extends DomainSpecification {
 
     function noPathChosen() {
-        $this->whenProject(Walk::class)
-            ->assertEquals($this->projection(Walk::class)->getChosenPath(), null);
+        $this->whenProject(Walk::class);
+        $this->assertEquals($this->projection(Walk::class)->getChosenPath(), null);
     }
 
     function chosePath() {
@@ -23,14 +23,14 @@ class ChoosePathSpec extends DomainSpecification {
     function pathChosen() {
         $this->given(Path::class, 'foo')->created(Time::at('today'));
         $this->givenThat('DidChoosePath', Walk::class)->with('path', new PathIdentifier('foo'));
-        $this->whenProject(Walk::class)
-            ->assertEquals($this->projection(Walk::class)->getChosenPath(), new PathIdentifier('foo'));
+        $this->whenProject(Walk::class);
+        $this->assertEquals($this->projection(Walk::class)->getChosenPath(), new PathIdentifier('foo'));
     }
 
     function chosenPathNotActive() {
         $this->given(Path::class, 'foo')->created(Time::at('tomorrow'));
         $this->givenThat('DidChoosePath', Walk::class)->with('path', new PathIdentifier('foo'));
-        $this->whenProject(Walk::class)
-            ->assertEquals($this->projection(Walk::class)->getChosenPath(), null);
+        $this->whenProject(Walk::class);
+        $this->assertEquals($this->projection(Walk::class)->getChosenPath(), null);
     }
 }

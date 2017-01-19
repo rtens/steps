@@ -16,15 +16,15 @@ class TakingStepsSpec extends DomainSpecification {
     }
 
     function noPathChosen() {
-        $this->whenProject(Walk::class)
-            ->assertEquals($this->projection(Walk::class)->getCurrentStep(), null);
+        $this->whenProject(Walk::class);
+        $this->assertEquals($this->projection(Walk::class)->getCurrentStep(), null);
     }
 
     function noCurrentStep() {
         $this->givenThat('DidChoosePath', Walk::class)->with('path', new PathIdentifier('foo'));
 
-        $this->whenProject(Walk::class)
-            ->assertEquals($this->projection(Walk::class)->getCurrentStep(), null);
+        $this->whenProject(Walk::class);
+        $this->assertEquals($this->projection(Walk::class)->getCurrentStep(), null);
     }
 
     function withCurrentStep() {
@@ -32,8 +32,8 @@ class TakingStepsSpec extends DomainSpecification {
         $this->givenThat('DidChoosePath', Walk::class)->with('path', new PathIdentifier('foo'));
         $this->given(Path::class, 'foo')->didTakeNextStep();
 
-        $this->whenProject(Walk::class)
-            ->assertEquals($this->projection(Walk::class)->getCurrentStep()->getGoal(), new GoalIdentifier('one'));
+        $this->whenProject(Walk::class);
+        $this->assertEquals($this->projection(Walk::class)->getCurrentStep()->getGoal(), new GoalIdentifier('one'));
     }
 
     function hideNextStepWhileWalking() {
@@ -42,8 +42,8 @@ class TakingStepsSpec extends DomainSpecification {
         $this->givenThat('DidChoosePath', Walk::class)->with('path', new PathIdentifier('foo'));
         $this->given(Path::class, 'foo')->didTakeNextStep();
 
-        $this->whenProject(Walk::class)
-            ->assertEquals($this->projection(Walk::class)->getNextStep(), null);
+        $this->whenProject(Walk::class);
+        $this->assertEquals($this->projection(Walk::class)->getNextStep(), null);
     }
 
     function showUnitsLeft() {
@@ -51,8 +51,8 @@ class TakingStepsSpec extends DomainSpecification {
         $this->givenThat('DidChoosePath', Walk::class)->with('path', new PathIdentifier('foo'));
         $this->given(Path::class, 'foo')->didTakeNextStep();
 
-        $this->whenProject(Walk::class)
-            ->assertEquals($this->projection(Walk::class)->getCurrentStep()->getUnitsLeft(), .5);
+        $this->whenProject(Walk::class);
+        $this->assertEquals($this->projection(Walk::class)->getCurrentStep()->getUnitsLeft(), .5);
     }
 
     function calculateUnitsLeft() {
@@ -62,8 +62,8 @@ class TakingStepsSpec extends DomainSpecification {
         $this->given(Path::class, 'foo')->didTakeNextStep();
 
         Time::freeze('12:10');
-        $this->whenProject(Walk::class)
-            ->assertEquals($this->projection(Walk::class)->getCurrentStep()->getUnitsLeft(), .2);
+        $this->whenProject(Walk::class);
+        $this->assertEquals($this->projection(Walk::class)->getCurrentStep()->getUnitsLeft(), .2);
     }
 
     function unitsLeftOfNotTakenStep() {

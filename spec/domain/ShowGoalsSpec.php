@@ -7,8 +7,8 @@ use rtens\udity\utils\Time;
 class ShowGoalsSpec extends DomainSpecification {
 
     function noGoals() {
-        $this->whenProject(GoalList::class)
-            ->assertEquals($this->projection(GoalList::class)->getList(), []);
+        $this->whenProject(GoalList::class);
+        $this->assertEquals($this->projection(GoalList::class)->getList(), []);
     }
 
     function twoGoals() {

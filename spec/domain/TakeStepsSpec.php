@@ -66,12 +66,13 @@ class TakeStepsSpec extends DomainSpecification {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
 
-        $this->whenProjectObject(Path::class)
-            ->assertEquals(count($this->projection(Path::class)->getCompletedSteps()), 0)
-            ->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 2)
-            ->assertEquals($this->projection(Path::class)->getRemainingSteps()[0]->getGoal(), new GoalIdentifier('First'))
-            ->assertEquals($this->projection(Path::class)->getRemainingSteps()[1]->getGoal(), new GoalIdentifier('Second'))
-            ->assertEquals($this->projection(Path::class)->getCurrentStep(), null);
+        $path = $this->whenProjectObject(Path::class);
+
+        $this->assertEquals(count($path->getCompletedSteps()), 0);
+        $this->assertEquals(count($path->getRemainingSteps()), 2);
+        $this->assertEquals($path->getRemainingSteps()[0]->getGoal(), new GoalIdentifier('First'));
+        $this->assertEquals($path->getRemainingSteps()[1]->getGoal(), new GoalIdentifier('Second'));
+        $this->assertEquals($path->getCurrentStep(), null);
     }
 
     function projectCurrentStep() {
@@ -79,12 +80,13 @@ class TakeStepsSpec extends DomainSpecification {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
         $this->given(Path::class)->didTakeNextStep();
 
-        $this->whenProjectObject(Path::class)
-            ->assertEquals(count($this->projection(Path::class)->getCompletedSteps()), 0)
-            ->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 1)
-            ->assertEquals($this->projection(Path::class)->getRemainingSteps()[0]->getGoal(), new GoalIdentifier('Second'))
-            ->assertEquals($this->projection(Path::class)->getCurrentStep()->getStarted(), Time::now())
-            ->assertEquals($this->projection(Path::class)->getCurrentStep()->getGoal(), new GoalIdentifier('First'));
+        $path = $this->whenProjectObject(Path::class);
+
+        $this->assertEquals(count($path->getCompletedSteps()), 0);
+        $this->assertEquals(count($path->getRemainingSteps()), 1);
+        $this->assertEquals($path->getRemainingSteps()[0]->getGoal(), new GoalIdentifier('Second'));
+        $this->assertEquals($path->getCurrentStep()->getStarted(), Time::now());
+        $this->assertEquals($path->getCurrentStep()->getGoal(), new GoalIdentifier('First'));
     }
 
     function completeFirstStep() {
@@ -93,12 +95,12 @@ class TakeStepsSpec extends DomainSpecification {
         $this->given(Path::class)->didTakeNextStep();
         $this->given(Path::class)->didCompleteStep();
 
-        $this->whenProjectObject(Path::class)
-            ->assertEquals(count($this->projection(Path::class)->getCompletedSteps()), 1)
-            ->assertEquals($this->projection(Path::class)->getCompletedSteps()[0]->getGoal(), new GoalIdentifier('First'))
-            ->assertEquals($this->projection(Path::class)->getCompletedSteps()[0]->getCompleted(), Time::now())
-            ->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 1)
-            ->assertEquals($this->projection(Path::class)->getRemainingSteps()[0]->getGoal(), new GoalIdentifier('Second'));
+        $this->whenProjectObject(Path::class);
+        $this->assertEquals(count($this->projection(Path::class)->getCompletedSteps()), 1);
+        $this->assertEquals($this->projection(Path::class)->getCompletedSteps()[0]->getGoal(), new GoalIdentifier('First'));
+        $this->assertEquals($this->projection(Path::class)->getCompletedSteps()[0]->getCompleted(), Time::now());
+        $this->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 1);
+        $this->assertEquals($this->projection(Path::class)->getRemainingSteps()[0]->getGoal(), new GoalIdentifier('Second'));
     }
 
     function skipSecondStep() {
@@ -108,10 +110,10 @@ class TakeStepsSpec extends DomainSpecification {
         $this->given(Path::class)->didCompleteStep();
         $this->given(Path::class)->didSkipNextStep();
 
-        $this->whenProjectObject(Path::class)
-            ->assertEquals(count($this->projection(Path::class)->getCompletedSteps()), 1)
-            ->assertEquals($this->projection(Path::class)->getCompletedSteps()[0]->getGoal(), new GoalIdentifier('First'))
-            ->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 0);
+        $this->whenProjectObject(Path::class);
+        $this->assertEquals(count($this->projection(Path::class)->getCompletedSteps()), 1);
+        $this->assertEquals($this->projection(Path::class)->getCompletedSteps()[0]->getGoal(), new GoalIdentifier('First'));
+        $this->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 0);
     }
 
     function notAPlannedStep() {
@@ -141,10 +143,10 @@ class TakeStepsSpec extends DomainSpecification {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
         $this->given(Path::class)->didTakeStep(new GoalIdentifier('Second'));
 
-        $this->whenProjectObject(Path::class)
-            ->assertEquals($this->projection(Path::class)->getCurrentStep()->getGoal(), new GoalIdentifier('Second'))
-            ->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 2)
-            ->assertEquals($this->projection(Path::class)->getRemainingSteps()[0]->getGoal(), new GoalIdentifier('First'))
-            ->assertEquals($this->projection(Path::class)->getRemainingSteps()[1]->getGoal(), new GoalIdentifier('Second'));
+        $this->whenProjectObject(Path::class);
+        $this->assertEquals($this->projection(Path::class)->getCurrentStep()->getGoal(), new GoalIdentifier('Second'));
+        $this->assertEquals(count($this->projection(Path::class)->getRemainingSteps()), 2);
+        $this->assertEquals($this->projection(Path::class)->getRemainingSteps()[0]->getGoal(), new GoalIdentifier('First'));
+        $this->assertEquals($this->projection(Path::class)->getRemainingSteps()[1]->getGoal(), new GoalIdentifier('Second'));
     }
 }
