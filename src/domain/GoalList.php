@@ -14,9 +14,23 @@ class GoalList implements Projection {
      * @var RankedGoal[]
      */
     private $goals = [];
+    /**
+     * @var bool
+     */
+    private $showLinkedGoals;
+    /**
+     * @var bool
+     */
+    private $showOnlyLeafs;
 
-    public function __construct() {
+    /**
+     * @param bool $linkedGoals
+     * @param bool $leafsOnly
+     */
+    public function __construct($linkedGoals = false, $leafsOnly = true) {
         $this->paths = new PathList();
+        $this->showLinkedGoals = $linkedGoals;
+        $this->showOnlyLeafs = $leafsOnly;
     }
 
     public function apply(Event $event) {
@@ -46,8 +60,8 @@ class GoalList implements Projection {
             return
                 $goal->isOpen()
                 && !$this->hasUpcomingStep($goal)
-                && !$goal->hasOpenLinks()
-                && !$goal->hasOpenChildren();
+                && ($this->showLinkedGoals || !$goal->hasOpenLinks())
+                && (!$this->showOnlyLeafs || !$goal->hasOpenChildren());
         }));
     }
 
