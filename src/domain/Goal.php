@@ -218,7 +218,7 @@ class Goal extends DomainObject {
         if (!$this->deadline) {
             return null;
         }
-        return ($this->deadline->getTimestamp() - Time::now()->getTimestamp()) / (24 * 60 * 60);
+        return ($this->deadline->getTimestamp() - Time::now()->getTimestamp()) / 86400;
     }
 
     public function didAddNote(Html $note) {

@@ -12,17 +12,17 @@ class RankByDeadlineSpec extends RankSpecification {
     }
 
     function farAwayDeadline() {
-        $this->given(Goal::class)->setDeadline(Time::at('37 days'));
+        $this->given(Goal::class, 'foo')->setDeadline(Time::at('37 days'));
         $this->assertRank(0);
     }
 
     function soonDeadline() {
-        $this->given(Goal::class)->setDeadline(Time::at('7 days'));
+        $this->given(Goal::class, 'foo')->setDeadline(Time::at('7 days'));
         $this->assertRank(30);
     }
 
     function missedDeadline() {
-        $this->given(Goal::class)->setDeadline(Time::at('1 day ago'));
+        $this->given(Goal::class, 'foo')->setDeadline(Time::at('1 day ago'));
         $this->assertRank(30);
     }
 
@@ -30,7 +30,7 @@ class RankByDeadlineSpec extends RankSpecification {
         $this->given(Goal::class, 'bar')->created('Bar');
         $this->given(Goal::class, 'bar')->setDeadline(Time::at('22 days'));
 
-        $this->given(Goal::class)->doMove(new GoalIdentifier('bar'));
+        $this->given(Goal::class, 'foo')->doMove(new GoalIdentifier('bar'));
 
         $this->assertRank(15);
     }

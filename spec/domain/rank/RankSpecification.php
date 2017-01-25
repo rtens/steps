@@ -8,11 +8,11 @@ use rtens\steps2\domain\GoalList;
 abstract class RankSpecification extends DomainSpecification {
 
     function before() {
-        $this->given(Goal::class)->created('Foo');
+        $this->given(Goal::class, 'foo')->created('Foo');
     }
 
     protected function assertRank($expected) {
         $goals = $this->whenProject(GoalList::class)->getGoals();
-        $this->assertEquals($goals[self::DEFAULT_KEY]->getRank(), $expected);
+        $this->assertEquals($goals['foo']->getRank(), $expected);
     }
 }

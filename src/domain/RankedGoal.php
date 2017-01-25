@@ -4,6 +4,7 @@ namespace rtens\steps2\domain;
 use rtens\udity\AggregateIdentifier;
 use rtens\udity\Event;
 use rtens\udity\utils\ArgumentFiller;
+use rtens\udity\utils\Time;
 
 class RankedGoal {
     /**
@@ -83,17 +84,26 @@ class RankedGoal {
     }
 
     public function getRank() {
-        $rating = 0;
-        if ($this->getRating()) {
-            $rating = $this->getRating()->getUrgency() * 2 + $this->getRating()->getImportance();
+        $ratingFactor = 0;
+        $rating = $this->getRating();
+        if ($rating) {
+            $ratingFactor = $rating->getUrgency() * 2 + $rating->getImportance();
         }
 
-        $panic = 0;
-        if ($this->getLeft() !== null) {
-            $panic = min(30, max(37 - $this->getLeft(), 0));
+        $panicFactor = 0;
+        $left = $this->getLeft();
+        if ($left !== null) {
+            $panicFactor = min(30, max(37 - $left, 0));
         }
 
-        return $rating + $panic;
+        $penalty = 0;
+        $step = $this->getLastCompletedStep();
+        if ($step !== null) {
+            $daysPassed = (Time::now()->getTimestamp() - $step->getCompleted()->getTimestamp()) / 86400;
+            $penalty = min(30, max($daysPassed - 7, 0));
+        }
+
+        return $ratingFactor + $penalty + $panicFactor;
     }
 
     public function getFullName() {
@@ -135,6 +145,23 @@ class RankedGoal {
             $parent = $goal->getParent();
             return $parent && $parent->getIdentifier() == $this->getIdentifier();
         });
+    }
+
+    private function getLastCompletedStep() {
+        /** @var null|Step $lastCompletedStep */
+        $lastCompletedStep = null;
+
+        foreach ($this->list->paths() as $path) {
+            foreach ($path->getCompletedSteps() as $step) {
+                if ($step->getGoal() != $this->getIdentifier()) {
+                    continue;
+                }
+                if (!$lastCompletedStep || $lastCompletedStep->getCompleted() < $step->getCompleted()) {
+                    $lastCompletedStep = $step;
+                }
+            }
+        }
+        return $lastCompletedStep;
     }
 
     /**

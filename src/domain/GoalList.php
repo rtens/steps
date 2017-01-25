@@ -73,6 +73,13 @@ class GoalList implements Projection {
         return $this->goals[$identifier->getKey()];
     }
 
+    /**
+     * @return Path[]|\rtens\udity\Projection[]
+     */
+    public function paths() {
+        return $this->paths->getItems();
+    }
+
     public function options() {
         $items = $this->goals;
 
@@ -89,7 +96,7 @@ class GoalList implements Projection {
     }
 
     private function hasUpcomingStep(RankedGoal $goal) {
-        foreach ($this->paths->getItems() as $path) {
+        foreach ($this->paths() as $path) {
             if ($path->getEnds() < Time::now()) {
                 continue;
             }
