@@ -24,6 +24,12 @@ class Application extends Udity {
                     ->setFilter('left', function ($left) {
                         return $left !== null ? round($left, 1) : null;
                     })
+                    ->setFilter('lack', function ($value) {
+                        return $value !== null ? round($value, 1) : null;
+                    })
+                    ->setFilter('neglect', function ($value) {
+                        return $value !== null ? round($value, 1) : null;
+                    })
                     ->setFilter('rank', function ($rank) {
                         return round($rank, 1);
                     }));
