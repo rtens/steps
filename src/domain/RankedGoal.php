@@ -60,7 +60,8 @@ class RankedGoal {
 
         if ($rating != null) {
             return $rating;
-        } if ($this->getParent()) {
+        }
+        if ($this->getParent()) {
             return $this->getParent()->getRating();
         }
 
@@ -74,6 +75,18 @@ class RankedGoal {
             return $left;
         } else if ($this->getParent()) {
             return $this->getParent()->getLeft();
+        }
+
+        return null;
+    }
+
+    private function getDaysNeglected() {
+        $step = $this->getLastCompletedStep();
+
+        if ($step !== null) {
+            return (Time::now()->getTimestamp() - $step->getCompleted()->getTimestamp()) / 86400;
+        } else if ($this->getParent()) {
+            return $this->getParent()->getDaysNeglected();
         }
 
         return null;
@@ -97,10 +110,9 @@ class RankedGoal {
         }
 
         $penalty = 0;
-        $step = $this->getLastCompletedStep();
-        if ($step !== null) {
-            $daysPassed = (Time::now()->getTimestamp() - $step->getCompleted()->getTimestamp()) / 86400;
-            $penalty = min(30, max($daysPassed - 7, 0));
+        $daysNeglected = $this->getDaysNeglected();
+        if ($daysNeglected !== null) {
+            $penalty = min(30, max($daysNeglected - 7, 0));
         }
 
         return $ratingFactor + $penalty + $panicFactor;
@@ -161,6 +173,14 @@ class RankedGoal {
                 }
             }
         }
+
+        foreach ($this->getChildren() as $child) {
+            $lastStepOfChild = $child->getLastCompletedStep();
+            if ($lastStepOfChild && (!$lastCompletedStep || $lastCompletedStep->getCompleted() < $lastStepOfChild->getCompleted())) {
+                $lastCompletedStep = $lastStepOfChild;
+            }
+        }
+
         return $lastCompletedStep;
     }
 
