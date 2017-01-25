@@ -80,13 +80,13 @@ class RankedGoal {
         return null;
     }
 
-    private function getDaysNeglected() {
+    public function getNeglect() {
         $step = $this->getLastCompletedStep();
 
         if ($step !== null) {
             return (Time::now()->getTimestamp() - $step->getCompleted()->getTimestamp()) / 86400;
         } else if ($this->getParent()) {
-            return $this->getParent()->getDaysNeglected();
+            return $this->getParent()->getNeglect();
         }
 
         return null;
@@ -110,7 +110,7 @@ class RankedGoal {
         }
 
         $penalty = 0;
-        $daysNeglected = $this->getDaysNeglected();
+        $daysNeglected = $this->getNeglect();
         if ($daysNeglected !== null) {
             $penalty = min(30, max($daysNeglected - 7, 0));
         }
@@ -190,7 +190,7 @@ class RankedGoal {
         return $lastCompletedStep;
     }
 
-    private function getLack() {
+    public function getLack() {
         $quota = $this->getQuota();
         if (!$quota) {
             if (!$this->getParent()) {
