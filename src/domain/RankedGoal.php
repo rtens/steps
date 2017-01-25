@@ -115,7 +115,13 @@ class RankedGoal {
             $penalty = min(30, max($daysNeglected - 7, 0));
         }
 
-        return $ratingFactor + $penalty + $panicFactor;
+        $lackFactor = 1;
+        $lack = $this->getLack();
+        if ($lack !== null) {
+            $lackFactor = max(0, $lackFactor + $lack);
+        }
+
+        return ($ratingFactor + $penalty) * $lackFactor + $panicFactor;
     }
 
     public function getFullName() {
@@ -182,6 +188,68 @@ class RankedGoal {
         }
 
         return $lastCompletedStep;
+    }
+
+    private function getLack() {
+        $quota = $this->getQuota();
+        if (!$quota) {
+            if (!$this->getParent()) {
+                return null;
+            }
+
+            return $this->getParent()->getLack();
+        }
+
+        $proportion = $this->getNormalizedQuota() / $this->getNormalizedQuotaSum();
+
+        $trackedHours = $this->getTrackedHours(Time::at($quota->getPerDays() . ' days ago'));
+        return (($quota->getHours() - $trackedHours) / $quota->getHours()) * $proportion;
+    }
+
+    private function getNormalizedQuotaSum() {
+        $sum = 0;
+        foreach ($this->list->getGoals() as $goal) {
+            if (!$goal->isOpen()) {
+                continue;
+            }
+            $sum += $goal->getNormalizedQuota();
+        }
+        return $sum;
+    }
+
+    private function getNormalizedQuota() {
+        $quota = $this->getQuota();
+        if (!$quota) {
+            return null;
+        }
+        return $quota->getHours() / $quota->getPerDays();
+    }
+
+    private function getTrackedHours(\DateTimeImmutable  $after) {
+        $trackedSeconds = 0;
+
+        foreach ($this->list->paths() as $path) {
+            foreach ($path->getCompletedSteps() as $step) {
+                if ($step->getGoal() != $this->getIdentifier()) {
+                    continue;
+                }
+                if ($step->getCompleted() < $after) {
+                    continue;
+                }
+                if ($step->getStarted() < $after) {
+                    $trackedSeconds += $step->getCompleted()->getTimestamp() - $after->getTimestamp();
+                } else {
+                    $trackedSeconds += $step->getCompleted()->getTimestamp() - $step->getStarted()->getTimestamp();
+                }
+            }
+        }
+        $trackedHours = $trackedSeconds / 3600;
+
+        foreach ($this->getChildren() as $child) {
+            $trackedHours += $child->getTrackedHours($after);
+        }
+
+        return $trackedHours;
     }
 
     /**
