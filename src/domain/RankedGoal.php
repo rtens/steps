@@ -92,10 +92,6 @@ class RankedGoal {
         return null;
     }
 
-    public function getQuota() {
-        return $this->goal->getQuota();
-    }
-
     public function getRank() {
         $ratingFactor = 0;
         $rating = $this->getRating();
@@ -116,7 +112,7 @@ class RankedGoal {
         }
 
         $lackFactor = 1;
-        $lack = $this->getLack();
+        $lack = $this->getProportionalLack();
         if ($lack !== null) {
             $lackFactor = max(0, $lackFactor + $lack);
         }
@@ -190,6 +186,19 @@ class RankedGoal {
         return $lastCompletedStep;
     }
 
+    private function getProportionalLack() {
+        if (!$this->getQuota()) {
+            if (!$this->getParent()) {
+                return null;
+            }
+
+            return $this->getParent()->getProportionalLack();
+        }
+
+        $lack = $this->getLack();
+        return ($lack[0] / $lack[1]) * ($this->getNormalizedQuota() / $this->getNormalizedQuotaSum());
+    }
+
     public function getLack() {
         $quota = $this->getQuota();
         if (!$quota) {
@@ -200,10 +209,8 @@ class RankedGoal {
             return $this->getParent()->getLack();
         }
 
-        $proportion = $this->getNormalizedQuota() / $this->getNormalizedQuotaSum();
-
         $trackedHours = $this->getTrackedHours(Time::at($quota->getPerDays() . ' days ago'));
-        return (($quota->getHours() - $trackedHours) / $quota->getHours()) * $proportion;
+        return [$quota->getHours() - $trackedHours, $quota->getHours()];
     }
 
     private function getNormalizedQuotaSum() {
@@ -225,7 +232,11 @@ class RankedGoal {
         return $quota->getHours() / $quota->getPerDays();
     }
 
-    private function getTrackedHours(\DateTimeImmutable  $after) {
+    private function getQuota() {
+        return $this->goal->getQuota();
+    }
+
+    private function getTrackedHours(\DateTimeImmutable $after) {
         $trackedSeconds = 0;
 
         foreach ($this->list->paths() as $path) {
