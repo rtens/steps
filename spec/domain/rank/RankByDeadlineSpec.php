@@ -3,6 +3,7 @@ namespace rtens\steps2\domain\rank;
 
 use rtens\steps2\domain\Goal;
 use rtens\steps2\domain\GoalIdentifier;
+use rtens\steps2\FakeEvent;
 use rtens\udity\utils\Time;
 
 class RankByDeadlineSpec extends RankSpecification {
@@ -27,7 +28,7 @@ class RankByDeadlineSpec extends RankSpecification {
     }
 
     function inheritDeadline() {
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Goal::class, 'bar')->setDeadline(Time::at('22 days'));
 
         $this->given(Goal::class, 'foo')->doMove(new GoalIdentifier('bar'));

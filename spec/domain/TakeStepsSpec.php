@@ -1,6 +1,7 @@
 <?php
 namespace rtens\steps2\domain;
 
+use rtens\steps2\FakeEvent;
 use rtens\udity\check\DomainSpecification;
 use rtens\udity\check\event\Events;
 use rtens\udity\utils\Time;
@@ -20,7 +21,7 @@ class TakeStepsSpec extends DomainSpecification {
 
     function alreadyTakingStep() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('MyGoal'), 1, false);
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         $this->tryTo(Path::class)->doTakeNextStep();
         $this->thenShouldFailWith('Already taking a step');
     }
@@ -32,15 +33,15 @@ class TakeStepsSpec extends DomainSpecification {
 
     function completeStep() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('myGoal'), 1, false);
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         $this->when(Path::class)->doCompleteStep();
         $this->then(Events::named('DidCompleteStep'))->shouldBeAppended();
     }
 
     function stepAlreadyCompleted() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('myGoal'), 1, false);
-        $this->given(Path::class)->didTakeNextStep();
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->tryTo(Path::class)->doCompleteStep();
         $this->thenShouldFailWith('Not taking any step');
@@ -55,8 +56,8 @@ class TakeStepsSpec extends DomainSpecification {
 
     function noMoreStepsLeftToSkip() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('MyGoal'), 1, false);
-        $this->given(Path::class)->didTakeNextStep();
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->tryTo(Path::class)->doSkipNextStep();
         $this->thenShouldFailWith('No next step to skip');
@@ -78,7 +79,7 @@ class TakeStepsSpec extends DomainSpecification {
     function projectCurrentStep() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
 
         $path = $this->whenProjectObject(Path::class);
 
@@ -92,8 +93,8 @@ class TakeStepsSpec extends DomainSpecification {
     function completeFirstStep() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
-        $this->given(Path::class)->didTakeNextStep();
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->whenProjectObject(Path::class);
         $this->assertEquals(count($this->projection(Path::class)->getCompletedSteps()), 1);
@@ -106,8 +107,8 @@ class TakeStepsSpec extends DomainSpecification {
     function skipSecondStep() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
-        $this->given(Path::class)->didTakeNextStep();
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
         $this->given(Path::class)->didSkipNextStep();
 
         $this->whenProjectObject(Path::class);
@@ -126,8 +127,8 @@ class TakeStepsSpec extends DomainSpecification {
 
     function stepOfGoalAlreadyCompleted() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
-        $this->given(Path::class)->didTakeNextStep();
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->tryTo(Path::class)->doTakeStep(new GoalIdentifier('First'));
         $this->thenShouldFailWith('No remaining step for this goal');
@@ -135,13 +136,13 @@ class TakeStepsSpec extends DomainSpecification {
 
     function takeAnyStep() {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
-        $this->given(Path::class)->didTakeNextStep();
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('First'), 1, false);
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('Second'), 1, false);
-        $this->given(Path::class)->didTakeStep(new GoalIdentifier('Second'));
+        $this->given(Path::class)->didTakeStep(new GoalIdentifier('Second'), new FakeEvent());
 
         $this->whenProjectObject(Path::class);
         $this->assertEquals($this->projection(Path::class)->getCurrentStep()->getGoal(), new GoalIdentifier('Second'));

@@ -2,13 +2,14 @@
 namespace rtens\steps2\domain\rank;
 
 use rtens\steps2\domain\Goal;
+use rtens\steps2\FakeEvent;
 use rtens\udity\check\DomainSpecification;
 use rtens\steps2\domain\GoalList;
 
 abstract class RankSpecification extends DomainSpecification {
 
     function before() {
-        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
     }
 
     protected function assertRank($expected, $goal = 'foo') {

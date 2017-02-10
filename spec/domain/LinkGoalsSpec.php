@@ -1,6 +1,7 @@
 <?php
 namespace rtens\steps2\domain;
 
+use rtens\steps2\FakeEvent;
 use rtens\udity\check\DomainSpecification;
 use rtens\udity\check\event\Events;
 
@@ -17,8 +18,8 @@ class LinkGoalsSpec extends DomainSpecification {
     }
 
     function hideGoalsWithOpenLinks() {
-        $this->given(Goal::class, 'foo')->created('Foo');
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Goal::class, 'bar')->doLink(new GoalIdentifier('foo'));
 
         $this->whenProject(GoalList::class);
@@ -29,9 +30,9 @@ class LinkGoalsSpec extends DomainSpecification {
     }
 
     function hideGoalWithAnyOpenLink() {
-        $this->given(Goal::class, 'foo')->created('Foo');
-        $this->given(Goal::class, 'bar')->created('Bar');
-        $this->given(Goal::class, 'baz')->created('Baz');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
+        $this->given(Goal::class, 'baz')->created('Baz', new FakeEvent());
 
         $this->given(Goal::class, 'baz')->doLink(new GoalIdentifier('foo'));
         $this->given(Goal::class, 'baz')->doLink(new GoalIdentifier('bar'));
@@ -46,9 +47,9 @@ class LinkGoalsSpec extends DomainSpecification {
     }
 
     function showGoalsWithAchievedLinks() {
-        $this->given(Goal::class, 'foo')->created('Foo');
-        $this->given(Goal::class, 'bar')->created('Bar');
-        $this->given(Goal::class, 'baz')->created('Baz');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
+        $this->given(Goal::class, 'baz')->created('Baz', new FakeEvent());
 
         $this->given(Goal::class, 'baz')->doLink(new GoalIdentifier('foo'));
         $this->given(Goal::class, 'baz')->doLink(new GoalIdentifier('bar'));

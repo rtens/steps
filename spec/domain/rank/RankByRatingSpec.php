@@ -4,6 +4,7 @@ namespace rtens\steps2\domain\rank;
 use rtens\steps2\domain\Goal;
 use rtens\steps2\domain\GoalIdentifier;
 use rtens\steps2\domain\Rating;
+use rtens\steps2\FakeEvent;
 
 class RankByRatingSpec extends RankSpecification {
 
@@ -32,7 +33,7 @@ class RankByRatingSpec extends RankSpecification {
     }
 
     function inheritRating() {
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Goal::class, 'bar')->didRate(new Rating(6, 7));
 
         $this->given(Goal::class, 'foo')->doMove(new GoalIdentifier('bar'));

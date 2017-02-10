@@ -7,6 +7,7 @@ use rtens\steps2\domain\GoalList;
 use rtens\steps2\domain\Path;
 use rtens\steps2\domain\Quota;
 use rtens\steps2\domain\Rating;
+use rtens\steps2\FakeEvent;
 use rtens\udity\utils\Time;
 
 class RankByQuotaSpec extends RankSpecification {
@@ -29,9 +30,9 @@ class RankByQuotaSpec extends RankSpecification {
         $this->given(Goal::class, 'foo')->setQuota(new Quota(1, 1));
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
         Time::freeze('12:00');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('12:30');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->assertRank(15);
     }
@@ -43,19 +44,19 @@ class RankByQuotaSpec extends RankSpecification {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, true);
 
         Time::freeze('12:00');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('12:15');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         Time::freeze('12:30');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('13:05');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         Time::freeze('13:00');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('13:15');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->assertRank(15);
     }
@@ -65,19 +66,19 @@ class RankByQuotaSpec extends RankSpecification {
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 3, true);
 
         Time::freeze('11:00');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('11:30');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         Time::freeze('11:45');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('12:15');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         Time::freeze('12:30');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('12:45');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         Time::freeze('tomorrow 12:00');
         $this->assertRank(15);
@@ -87,9 +88,9 @@ class RankByQuotaSpec extends RankSpecification {
         $this->given(Goal::class, 'foo')->setQuota(new Quota(1, 1));
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
         Time::freeze('12:00');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('13:00');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->assertRank(10);
     }
@@ -98,9 +99,9 @@ class RankByQuotaSpec extends RankSpecification {
         $this->given(Goal::class, 'foo')->setQuota(new Quota(1, 1));
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
         Time::freeze('12:00');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('13:30');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->assertRank(5);
     }
@@ -109,16 +110,16 @@ class RankByQuotaSpec extends RankSpecification {
         $this->given(Goal::class, 'foo')->setQuota(new Quota(1, 1));
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
         Time::freeze('12:00');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('14:01');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->assertRank(0);
     }
 
     function proportionalQuota() {
         $this->given(Goal::class, 'foo')->setQuota(new Quota(1, 1));
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Goal::class, 'bar')->didRate(new Rating(10, 0));
         $this->given(Goal::class, 'bar')->setQuota(new Quota(20, 5));
 
@@ -129,7 +130,7 @@ class RankByQuotaSpec extends RankSpecification {
 
     function closedGoalsDoNotCount() {
         $this->given(Goal::class, 'foo')->setQuota(new Quota(1, 1));
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Goal::class, 'bar')->didAchieve();
         $this->given(Goal::class, 'bar')->setQuota(new Quota(20, 5));
 
@@ -139,57 +140,57 @@ class RankByQuotaSpec extends RankSpecification {
     function combineTracksOfChildren() {
         $this->given(Goal::class, 'foo')->setQuota(new Quota(1, 1));
 
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Goal::class, 'bar')->didMove(new GoalIdentifier('foo'));
-        $this->given(Goal::class, 'baz')->created('Baz');
+        $this->given(Goal::class, 'baz')->created('Baz', new FakeEvent());
         $this->given(Goal::class, 'baz')->didMove(new GoalIdentifier('foo'));
 
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('bar'), 1, false);
         Time::freeze('12:00');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('12:15');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('baz'), 1, false);
         Time::freeze('12:15');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('12:30');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->assertRank(15);
     }
 
     function inheritLack() {
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Goal::class, 'bar')->setQuota(new Quota(1, 1));
         $this->given(Goal::class, 'foo')->didMove(new GoalIdentifier('bar'));
 
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('bar'), 1, false);
         Time::freeze('12:00');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('12:30');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->assertRank(15);
     }
 
     function inheritLackCombinedFromSiblings() {
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Goal::class, 'bar')->setQuota(new Quota(1, 1));
         $this->given(Goal::class, 'foo')->didMove(new GoalIdentifier('bar'));
 
-        $this->given(Goal::class, 'baz')->created('Baz');
+        $this->given(Goal::class, 'baz')->created('Baz', new FakeEvent());
         $this->given(Goal::class, 'baz')->didMove(new GoalIdentifier('bar'));
 
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('baz'), 1, false);
         Time::freeze('12:00');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('12:15');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
         Time::freeze('12:15');
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         Time::freeze('12:30');
-        $this->given(Path::class)->didCompleteStep();
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
         $this->assertRank(15);
     }

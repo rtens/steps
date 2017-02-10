@@ -8,7 +8,7 @@ use rtens\udity\Event;
 class AddGoalSpec extends DomainSpecification {
 
     function withName() {
-        $this->when(Goal::class)->created('Foo');
+        $this->when(Goal::class)->create('Foo');
         $this->then(Events::named('Created'))->should(function (Event $event) {
             return $event->getAggregateIdentifier() instanceof GoalIdentifier;
         });

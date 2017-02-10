@@ -6,6 +6,7 @@ use rtens\steps2\domain\Path;
 use rtens\steps2\domain\PathIdentifier;
 use rtens\steps2\domain\Step;
 use rtens\steps2\domain\Walk;
+use rtens\steps2\FakeEvent;
 use rtens\udity\check\DomainSpecification;
 use rtens\udity\utils\Time;
 
@@ -30,7 +31,7 @@ class TakingStepsSpec extends DomainSpecification {
     function withCurrentStep() {
         $this->given(Path::class, 'foo')->didPlanStep(new GoalIdentifier('one'), 1, false);
         $this->givenThat('DidChoosePath', Walk::class)->with('path', new PathIdentifier('foo'));
-        $this->given(Path::class, 'foo')->didTakeNextStep();
+        $this->given(Path::class, 'foo')->didTakeNextStep(new FakeEvent());
 
         $this->whenProject(Walk::class);
         $this->assertEquals($this->projection(Walk::class)->getCurrentStep()->getGoal(), new GoalIdentifier('one'));
@@ -40,7 +41,7 @@ class TakingStepsSpec extends DomainSpecification {
         $this->given(Path::class, 'foo')->didPlanStep(new GoalIdentifier('one'), 1, false);
         $this->given(Path::class, 'foo')->didPlanStep(new GoalIdentifier('two'), 1, false);
         $this->givenThat('DidChoosePath', Walk::class)->with('path', new PathIdentifier('foo'));
-        $this->given(Path::class, 'foo')->didTakeNextStep();
+        $this->given(Path::class, 'foo')->didTakeNextStep(new FakeEvent());
 
         $this->whenProject(Walk::class);
         $this->assertEquals($this->projection(Walk::class)->getNextStep(), null);
@@ -49,7 +50,7 @@ class TakingStepsSpec extends DomainSpecification {
     function showUnitsLeft() {
         $this->given(Path::class, 'foo')->didPlanStep(new GoalIdentifier('one'), .5, false);
         $this->givenThat('DidChoosePath', Walk::class)->with('path', new PathIdentifier('foo'));
-        $this->given(Path::class, 'foo')->didTakeNextStep();
+        $this->given(Path::class, 'foo')->didTakeNextStep(new FakeEvent());
 
         $this->whenProject(Walk::class);
         $this->assertEquals($this->projection(Walk::class)->getCurrentStep()->getUnitsLeft(), .5);
@@ -59,7 +60,7 @@ class TakingStepsSpec extends DomainSpecification {
         $this->given(Path::class, 'foo')->didPlanStep(new GoalIdentifier('one'), .6, false);
         $this->givenThat('DidChoosePath', Walk::class)->with('path', new PathIdentifier('foo'));
         Time::freeze('12:00');
-        $this->given(Path::class, 'foo')->didTakeNextStep();
+        $this->given(Path::class, 'foo')->didTakeNextStep(new FakeEvent());
 
         Time::freeze('12:10');
         $this->whenProject(Walk::class);

@@ -1,6 +1,7 @@
 <?php
 namespace rtens\steps2\domain;
 
+use rtens\steps2\FakeEvent;
 use rtens\udity\check\DomainSpecification;
 use rtens\udity\utils\Time;
 
@@ -12,8 +13,8 @@ class ShowGoalsSpec extends DomainSpecification {
     }
 
     function twoGoals() {
-        $this->given(Goal::class, 'foo')->created('Foo');
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
 
         $this->whenProject(GoalList::class);
 
@@ -22,8 +23,8 @@ class ShowGoalsSpec extends DomainSpecification {
     }
 
     function hidAchievedGoals() {
-        $this->given(Goal::class, 'foo')->created('Foo');
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Goal::class, 'foo')->didAchieve();
 
         $this->whenProject(GoalList::class);
@@ -34,8 +35,8 @@ class ShowGoalsSpec extends DomainSpecification {
     }
 
     function hideGivenUpGoals() {
-        $this->given(Goal::class, 'foo')->created('Foo');
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Goal::class, 'foo')->didGiveUp();
 
         $this->whenProject(GoalList::class);
@@ -46,8 +47,8 @@ class ShowGoalsSpec extends DomainSpecification {
     }
 
     function hidePlannedGoals() {
-        $this->given(Goal::class, 'foo')->created('Foo');
-        $this->given(Goal::class, 'bar')->created('Bar');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
         $this->given(Path::class)->created(Time::at('today'));
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
 
@@ -59,10 +60,10 @@ class ShowGoalsSpec extends DomainSpecification {
     }
 
     function showPlannedGoalWithoutUpcomingSteps() {
-        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
         $this->given(Path::class)->created(Time::at('yesterday'));
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
-        $this->given(Path::class)->didTakeNextStep();
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
 
         $this->whenProject(GoalList::class);
 
@@ -71,7 +72,7 @@ class ShowGoalsSpec extends DomainSpecification {
     }
 
     function showGoalsOfPastPaths() {
-        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
         $this->given(Path::class)->created(Time::at('yesterday'));
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
 
@@ -82,7 +83,7 @@ class ShowGoalsSpec extends DomainSpecification {
     }
 
     function hideGoalsOfFuturePaths() {
-        $this->given(Goal::class, 'foo')->created('Foo');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
         $this->given(Path::class)->created(Time::at('tomorrow'));
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
 
@@ -93,9 +94,9 @@ class ShowGoalsSpec extends DomainSpecification {
     }
 
     function sortOptionsOpenGoalsFirst() {
-        $this->given(Goal::class, 'foo')->created('Foo');
-        $this->given(Goal::class, 'bar')->created('Bar');
-        $this->given(Goal::class, 'baz')->created('Baz');
+        $this->given(Goal::class, 'foo')->created('Foo', new FakeEvent());
+        $this->given(Goal::class, 'bar')->created('Bar', new FakeEvent());
+        $this->given(Goal::class, 'baz')->created('Baz', new FakeEvent());
         $this->given(Goal::class, 'foo')->didAchieve();
         $this->given(Goal::class, 'baz')->didAchieve();
 
