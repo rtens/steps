@@ -25,7 +25,7 @@ class Application extends Udity {
                         return $left !== null ? round($left, 1) : null;
                     })
                     ->setFilter('lack', function ($value) {
-                        return $value !== null ? $value[0] . '/' . $value[1] : null;
+                        return $value !== null ? round($value[0], 0) . '/' . $value[1] : null;
                     })
                     ->setFilter('neglect', function ($value) {
                         return $value !== null ? round($value, 1) : null;
