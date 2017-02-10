@@ -55,6 +55,9 @@ class RankedGoal {
         return $this->goal->getName();
     }
 
+    /**
+     * @return null|Rating
+     */
     public function getRating() {
         $rating = $this->goal->getRating();
 
@@ -87,9 +90,9 @@ class RankedGoal {
             return (Time::now()->getTimestamp() - $step->getCompleted()->getTimestamp()) / 86400;
         } else if ($this->getParent()) {
             return $this->getParent()->getNeglect();
+        } else {
+            return (Time::now()->getTimestamp() - $this->goal->getCreationDate()->getTimestamp()) / 86400;
         }
-
-        return null;
     }
 
     public function getRank() {

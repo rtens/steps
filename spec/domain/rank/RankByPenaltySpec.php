@@ -42,6 +42,14 @@ class RankByPenaltySpec extends RankSpecification {
         $this->assertRank(30);
     }
 
+    function fallBackToCreationDate() {
+        Time::freeze('2001-01-01');
+        $this->given(Goal::class, 'bar')->created('Bar');
+
+        Time::freeze('2001-01-11');
+        $this->assertRank(3, 'bar');
+    }
+
     function twoTracks() {
         Time::freeze('2001-01-01');
         $this->given(Path::class)->created(Time::at('today'));

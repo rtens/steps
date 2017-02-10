@@ -3,9 +3,14 @@ namespace rtens\steps2\domain;
 
 use rtens\domin\parameters\Html;
 use rtens\udity\domain\objects\DomainObject;
+use rtens\udity\Event;
 use rtens\udity\utils\Time;
 
 class Goal extends DomainObject {
+    /**
+     * @var \DateTimeImmutable
+     */
+    private $creationDate;
     /**
      * @var string
      */
@@ -92,7 +97,8 @@ class Goal extends DomainObject {
         }
     }
 
-    public function created($name) {
+    public function created($name, Event $event) {
+        $this->creationDate = $event->getWhen();
         $this->name = $name;
     }
 
@@ -148,6 +154,13 @@ class Goal extends DomainObject {
      */
     public function getLinks() {
         return $this->links;
+    }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getCreationDate() {
+        return $this->creationDate;
     }
 
     /**

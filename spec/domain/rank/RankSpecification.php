@@ -11,8 +11,8 @@ abstract class RankSpecification extends DomainSpecification {
         $this->given(Goal::class, 'foo')->created('Foo');
     }
 
-    protected function assertRank($expected) {
+    protected function assertRank($expected, $goal = 'foo') {
         $goals = $this->whenProject(GoalList::class)->getGoals();
-        $this->assertEquals($goals['foo']->getRank(), $expected);
+        $this->assertEquals($goals[$goal]->getRank(), $expected);
     }
 }
