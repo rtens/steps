@@ -108,15 +108,20 @@ class ShowTracksSpec extends DomainSpecification {
         $this->given(Goal::class, 'two')->created('Two', new FakeEvent());
         $this->given(Goal::class, 'three')->created('Three', new FakeEvent());
         $this->given(Goal::class, 'four')->created('Four', new FakeEvent());
+        $this->given(Goal::class, 'five')->created('Four', new FakeEvent());
 
         $this->given(Goal::class, 'two')->didMove(new GoalIdentifier('one'));
         $this->given(Goal::class, 'four')->didMove(new GoalIdentifier('two'));
+        $this->given(Goal::class, 'five')->didMove(null);
 
         $this->given(Path::class)->created(Time::now());
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('one'), 1, true);
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('two'), 1, true);
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('three'), 1, true);
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('four'), 1, true);
+        $this->given(Path::class)->didPlanStep(new GoalIdentifier('five'), 1, true);
+        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
+        $this->given(Path::class)->didCompleteStep(new FakeEvent());
         $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         $this->given(Path::class)->didCompleteStep(new FakeEvent());
         $this->given(Path::class)->didTakeNextStep(new FakeEvent());

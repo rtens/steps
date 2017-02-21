@@ -48,7 +48,7 @@ class Tracks extends DefaultProjection {
         if ($goal == $this->goal) {
             return true;
         }
-        if (!array_key_exists($goal->getKey(), $this->parents)) {
+        if (!array_key_exists($goal->getKey(), $this->parents) || !$this->parents[$goal->getKey()]) {
             return false;
         }
         if ($this->parents[$goal->getKey()] == $this->goal) {
