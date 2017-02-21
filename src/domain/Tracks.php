@@ -3,7 +3,6 @@ namespace rtens\steps2\domain;
 
 use rtens\udity\domain\query\DefaultProjection;
 use rtens\udity\Event;
-use rtens\udity\utils\Time;
 
 class Tracks extends DefaultProjection {
     /**
@@ -27,11 +26,11 @@ class Tracks extends DefaultProjection {
      */
     private $parents = [];
 
-    public function __construct(\DateTimeImmutable $start = null,
+    public function __construct(\DateTimeImmutable $start,
                                 \DateTimeImmutable $end = null,
                                 GoalIdentifier $goal = null) {
         $this->paths = new PathList();
-        $this->start = $start ?: Time::at('30 days ago');
+        $this->start = $start;
         $this->goal = $goal;
         $this->end = $end;
     }

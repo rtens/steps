@@ -8,7 +8,7 @@ use rtens\udity\utils\Time;
 class ShowTracksSpec extends DomainSpecification {
 
     function noTracks() {
-        $this->whenProject(Tracks::class);
+        $this->whenProject(Tracks::class, [Time::at('today')]);
 
         $tracks = $this->projection(Tracks::class);
         $this->assert()->equals($tracks->getTracks(), []);
@@ -39,7 +39,7 @@ class ShowTracksSpec extends DomainSpecification {
         Time::freeze('14:30');
         $this->given(Path::class, 'bar')->didCompleteStep(new FakeEvent());
 
-        $this->whenProject(Tracks::class);
+        $this->whenProject(Tracks::class, [Time::at('today')]);
 
         $projection = $this->projection(Tracks::class);
         $this->assert()->equals($projection->getTotalHours(), 3.75);
@@ -103,29 +103,6 @@ class ShowTracksSpec extends DomainSpecification {
         ]);
     }
 
-    function defaultTimeSpan() {
-        $this->given(Path::class)->created(Time::now());
-        $this->given(Path::class)->didPlanStep(new GoalIdentifier('one'), 2, true);
-        Time::freeze('2001-01-01 11:59');
-        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
-        Time::freeze('2001-01-01 12:00');
-        $this->given(Path::class)->didCompleteStep(new FakeEvent());
-        Time::freeze('2001-01-01 12:00');
-        $this->given(Path::class)->didTakeNextStep(new FakeEvent());
-        Time::freeze('2001-01-01 13:00');
-        $this->given(Path::class)->didCompleteStep(new FakeEvent());
-
-        Time::freeze('2001-01-31 12:00');
-        $this->whenProject(Tracks::class);
-
-        $projection = $this->projection(Tracks::class);
-        $this->assert()->equals($projection->getTotalHours(), 1);
-
-        $tracks = $projection->getTracks();
-        $this->assert()->size($tracks, 1);
-        $this->assert()->equals($tracks[0]['started'], Time::at('2001-01-01 12:00'));
-    }
-
     function limitParent() {
         $this->given(Goal::class, 'one')->created('One', new FakeEvent());
         $this->given(Goal::class, 'two')->created('Two', new FakeEvent());
@@ -149,7 +126,9 @@ class ShowTracksSpec extends DomainSpecification {
         $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
-        $this->whenProject(Tracks::class, ['goal' => new GoalIdentifier('one')]);
+        $this->whenProject(Tracks::class, [
+            'start' => Time::at('today'),
+            'goal' => new GoalIdentifier('one')]);
 
         $projection = $this->projection(Tracks::class);
         $tracks = $projection->getTracks();
