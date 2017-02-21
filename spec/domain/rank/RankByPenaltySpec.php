@@ -26,10 +26,11 @@ class RankByPenaltySpec extends RankSpecification {
     function maximumPenalty() {
         $this->given(Path::class)->created(Time::at('today'));
         $this->given(Path::class)->didPlanStep(new GoalIdentifier('foo'), 1, false);
+        Time::freeze('2001-01-01');
         $this->given(Path::class)->didTakeNextStep(new FakeEvent());
         $this->given(Path::class)->didCompleteStep(new FakeEvent());
 
-        Time::freeze('37 days');
+        Time::freeze('2001-02-07');
         $this->assertRank(30);
     }
 

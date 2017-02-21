@@ -13,7 +13,8 @@ class RankByDeadlineSpec extends RankSpecification {
     }
 
     function farAwayDeadline() {
-        $this->given(Goal::class, 'foo')->setDeadline(Time::at('37 days'));
+        Time::freeze('2001-01-01');
+        $this->given(Goal::class, 'foo')->setDeadline(Time::at('2001-02-07'));
         $this->assertRank(0);
     }
 
